@@ -137,20 +137,39 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
 
 template < class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::clear() noexcept
-{}
+{
+  auto it = data_.begin();
+  while (it != data_.end()) {
+    it->clear();
+    ++it;
+  }
+  elements_ = 0;
+}
 
 template < class Key, class Value, class Hash, class Equal >
 size_t saldaev::HashTable< Key, Value, Hash, Equal >::size() const noexcept
 {
-  return 0;
+  return elements_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+size_t saldaev::HashTable< Key, Value, Hash, Equal >::bucket_count() const noexcept
+{
+  return slots_;
 }
 
 template < class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::empty() const noexcept
 {
-  return true;
+  return !elements_;
 }
 
 template < class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::swap(HashTable &other) noexcept
-{}
+{
+  data_.swap(other.data_);
+  std::swap(hasher_, other.hasher_);
+  std::swap(comparator_, other.comparator_);
+  std::swap(slots_, other.slots);
+  std::swap(elements_, other.elements_);
+}

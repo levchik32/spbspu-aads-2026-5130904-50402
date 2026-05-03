@@ -27,6 +27,7 @@ namespace saldaev
     void rehash(size_t slots);
     void clear() noexcept;
     size_t size() const noexcept;
+    size_t bucket_count() const noexcept;
     bool empty() const noexcept;
     void swap(HashTable &other) noexcept;
 
