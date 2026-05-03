@@ -58,3 +58,51 @@ saldaev::HashTable< Key, Value, Hash, Equal >::operator=(HashTable &&other) noex
 
   return *this;
 }
+
+template < class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::has(Key k) const noexcept
+{
+  return true;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+Value saldaev::HashTable< Key, Value, Hash, Equal >::get(Key k) const
+{
+  return Value{};
+}
+
+template < class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::remove(Key k)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::rewrite(Key k, Value v)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::clear() noexcept
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+size_t saldaev::HashTable< Key, Value, Hash, Equal >::size() const noexcept
+{
+  return 0;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::empty() const noexcept
+{
+  return true;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::swap(HashTable &other) noexcept
+{}
