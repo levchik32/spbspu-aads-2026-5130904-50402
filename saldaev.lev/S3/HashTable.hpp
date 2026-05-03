@@ -31,6 +31,42 @@ namespace saldaev
     bool empty() const noexcept;
     void swap(HashTable &other) noexcept;
 
+    struct Iterator
+    {
+    public:
+      std::pair< Key, Value > &operator*();
+      std::pair< Key, Value > *operator->();
+
+      Iterator &operator++();
+      Iterator operator++(int);
+
+      bool operator==(const Iterator &other) const;
+      bool operator!=(const Iterator &other) const;
+
+    private:
+      Vector< List< std::pair< Key, Value > > > *buckets_;
+      size_t bucket_idx_;
+      LIter< std::pair< Key, Value > > list_iter_;
+    };
+
+    struct ConstIterator
+    {
+    public:
+      const std::pair< Key, Value > &operator*() const;
+      const std::pair< Key, Value > *operator->() const;
+
+      ConstIterator &operator++();
+      ConstIterator operator++(int);
+
+      bool operator==(const ConstIterator &other) const;
+      bool operator!=(const ConstIterator &other) const;
+
+    private:
+      Vector< List< std::pair< Key, Value > > > *buckets_;
+      size_t bucket_idx_;
+      LCIter< std::pair< Key, Value > > list_iter_;
+    };
+
   private:
     Vector< List< std::pair< Key, Value > > > data_;
     Hash hasher_;
