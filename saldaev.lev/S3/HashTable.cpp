@@ -25,7 +25,11 @@ saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots, Hash hash
   comparator_(comparator),
   slots_(slots),
   elements_(0)
-{}
+{
+  for (; i < slots; ++i) {
+    data_.pushBack(List< std::pair< Key, Value > >());
+  }
+}
 
 template < class Key, class Value, class Hash, class Equal >
 saldaev::HashTable< Key, Value, Hash, Equal > &
