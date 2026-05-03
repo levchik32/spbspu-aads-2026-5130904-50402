@@ -65,27 +65,71 @@ saldaev::HashTable< Key, Value, Hash, Equal >::operator=(HashTable &&other) noex
 
 template < class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
-{}
+{
+  if (has(k)) {
+    throw std::invalid_argument("Key already exists");
+  }
+
+  data_[hasher_(k) % slots_].newTail({k, v});
+  ++elements_;
+}
 
 template < class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::has(Key k) const noexcept
 {
-  return true;
+  auto it = data_[hasher_(k) % slots_].begin();
+  while (it.isValid()) {
+    if (comparator_(it.getData().first, k)) {
+      return true;
+    }
+    ++it;
+  }
+  return false;
 }
 
 template < class Key, class Value, class Hash, class Equal >
 Value saldaev::HashTable< Key, Value, Hash, Equal >::get(Key k) const
 {
-  return Value{};
+  auto it = data_[hasher_(k) % slots_].begin();
+  while (it.isValid()) {
+    if (comparator_(it.getData().first, k)) {
+      return it.getData().second;
+    }
+    ++it;
+  }
+  throw std::invalid_argument("Key does not exist");
 }
 
 template < class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::remove(Key k)
-{}
+{
+  size_t idx = hasher_(k) % slots_;
+  auto it = data_[idx].begin();
+  while (it.isValid()) {
+    if (comparator_(it.getData().first, k)) {
+      data_[idx].cutCurrent(it);
+      --elements_;
+      return;
+    }
+    ++it;
+  }
+  throw std::invalid_argument("Key does not exist");
+}
 
 template < class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::rewrite(Key k, Value v)
-{}
+{
+  size_t idx = hasher_(k) % slots_;
+  auto it = data_[idx].begin();
+  while (it.isValid()) {
+    if (comparator_(it.getData().first, k)) {
+      data_[idx].setData(it, v);
+      return;
+    }
+    ++it;
+  }
+  throw std::invalid_argument("Key does not exist");
+}
 
 template < class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
