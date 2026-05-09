@@ -133,7 +133,21 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::rewrite(Key k, Value v)
 
 template < class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
-{}
+{
+  Vector< List< std::pair< Key, Value > > > newData(slots);
+  for (size_t i = 0; i < slots; ++i) {
+    newData.pushBack(List< std::pair< Key, Value > >());
+  }
+
+  auto it = this->begin();
+  while (it != this->end()) {
+    newData[hasher_(it->first) % slots].pushBack({std::move(it->first), std::move(it->second)});
+    ++it;
+  }
+
+  data_.swap(newData);
+  slots_ = slots;
+}
 
 template < class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::clear() noexcept
