@@ -192,7 +192,7 @@ template < class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::begin()
 {
   if (slots_ == 0) {
-    return Iterator(&data_, 0, typename List< std::pair< Key, Value > >::LIter(nullptr));
+    return Iterator(&data_, 0, typename List< std::pair< Key, Value > >::LIter());
   }
 
   size_t idx = 0;
@@ -200,7 +200,7 @@ typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTa
   while (it == data_[idx].end()) {
     ++idx;
     if (idx == data_.getSize()) {
-      return Iterator(&data_, idx, typename List< std::pair< Key, Value > >::LIter(nullptr));
+      return Iterator(&data_, idx, typename List< std::pair< Key, Value > >::LIter());
     }
     it = data_[idx].begin();
   }
@@ -210,7 +210,7 @@ typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTa
 template < class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::end()
 {
-  return Iterator(&data_, slots_, typename List< std::pair< Key, Value > >::LIter(nullptr));
+  return Iterator(&data_, slots_, typename List< std::pair< Key, Value > >::LIter());
 }
 
 template < class Key, class Value, class Hash, class Equal >
@@ -218,15 +218,15 @@ typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
 saldaev::HashTable< Key, Value, Hash, Equal >::begin() const
 {
   if (slots_ == 0) {
-    return ConstIterator(&data_, 0, typename List< std::pair< Key, Value > >::LCIter(nullptr));
+    return ConstIterator(&data_, 0, typename List< std::pair< Key, Value > >::LCIter());
   }
 
   size_t idx = 0;
-  typename List< std::pair< Key, Value > >::LIter it = data_[0].begin();
+  typename List< std::pair< Key, Value > >::LCIter it = data_[0].begin();
   while (it == data_[idx].end()) {
     ++idx;
     if (idx == data_.getSize()) {
-      return ConstIterator(&data_, idx, typename List< std::pair< Key, Value > >::LCIter(nullptr));
+      return ConstIterator(&data_, idx, typename List< std::pair< Key, Value > >::LCIter());
     }
     it = data_[idx].begin();
   }
@@ -237,7 +237,7 @@ template < class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
 saldaev::HashTable< Key, Value, Hash, Equal >::end() const
 {
-  return ConstIterator(&data_, slots_, typename List< std::pair< Key, Value > >::LCIter(nullptr));
+  return ConstIterator(&data_, slots_, typename List< std::pair< Key, Value > >::LCIter());
 }
 
 // ___ Iterator ___
@@ -271,7 +271,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++()
   while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
     ++bucket_idx_;
     if (bucket_idx_ == buckets_->getSize()) {
-      list_iter_ = typename List< std::pair< Key, Value > >::LIter(nullptr);
+      list_iter_ = typename List< std::pair< Key, Value > >::LIter();
       return *this;
     }
     list_iter_ = (*buckets_)[bucket_idx_].begin();
@@ -288,7 +288,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++(int)
   while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
     ++bucket_idx_;
     if (bucket_idx_ == buckets_->getSize()) {
-      list_iter_ = typename List< std::pair< Key, Value > >::LIter(nullptr);
+      list_iter_ = typename List< std::pair< Key, Value > >::LIter();
       return ret;
     }
     list_iter_ = (*buckets_)[bucket_idx_].begin();
@@ -338,7 +338,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++()
   while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
     ++bucket_idx_;
     if (bucket_idx_ == buckets_->getSize()) {
-      list_iter_ = typename List< std::pair< Key, Value > >::LСIter(nullptr);
+      list_iter_ = typename List< std::pair< Key, Value > >::LCIter();
       return *this;
     }
     list_iter_ = (*buckets_)[bucket_idx_].begin();
@@ -355,7 +355,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++(int)
   while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
     ++bucket_idx_;
     if (bucket_idx_ == buckets_->getSize()) {
-      list_iter_ = typename List< std::pair< Key, Value > >::LСIter(nullptr);
+      list_iter_ = typename List< std::pair< Key, Value > >::LCIter();
       return ret;
     }
     list_iter_ = (*buckets_)[bucket_idx_].begin();
