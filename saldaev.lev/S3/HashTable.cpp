@@ -3,8 +3,8 @@
 template < class Key, class Value, class Hash, class Equal >
 saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable &other):
   data_(other.data_),
-  hasher_(other.hasher),
-  comparator_(other.comparator),
+  hasher_(other.hasher_),
+  comparator_(other.comparator_),
   slots_(other.slots_),
   elements_(other.elements_)
 {}
@@ -12,8 +12,8 @@ saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable &other)
 template < class Key, class Value, class Hash, class Equal >
 saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable &&other) noexcept:
   data_(std::move(other.data_)),
-  hasher_(other.hasher),
-  comparator_(other.comparator),
+  hasher_(other.hasher_),
+  comparator_(other.comparator_),
   slots_(other.slots_),
   elements_(other.elements_)
 {}
@@ -39,8 +39,8 @@ saldaev::HashTable< Key, Value, Hash, Equal >::operator=(const HashTable &other)
     Vector< List< std::pair< Key, Value > > > cpy(other.data_);
     data_.swap(cpy);
 
-    hasher_ = other.hasher;
-    comparator_ = other.comparator;
+    hasher_ = other.hasher_;
+    comparator_ = other.comparator_;
     slots_ = other.slots_;
     elements_ = other.elements_;
   }
@@ -55,8 +55,8 @@ saldaev::HashTable< Key, Value, Hash, Equal >::operator=(HashTable &&other) noex
   Vector< List< std::pair< Key, Value > > > cpy(std::move(other.data_));
   data_.swap(cpy);
 
-  hasher_ = other.hasher;
-  comparator_ = other.comparator;
+  hasher_ = other.hasher_;
+  comparator_ = other.comparator_;
   slots_ = other.slots_;
   elements_ = other.elements_;
 
