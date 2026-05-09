@@ -28,7 +28,8 @@ namespace saldaev
       size_t bucket_idx_;
       typename List< std::pair< Key, Value > >::LIter list_iter_;
 
-      Iterator(Vector< List< std::pair< Key, Value > > > *b, size_t idx, List< std::pair< Key, Value > >::LIter it);
+      Iterator(Vector< List< std::pair< Key, Value > > > *b, size_t idx,
+               typename List< std::pair< Key, Value > >::LIter it);
     };
 
     struct ConstIterator
@@ -49,7 +50,7 @@ namespace saldaev
       typename List< std::pair< Key, Value > >::LCIter list_iter_;
 
       ConstIterator(Vector< List< std::pair< Key, Value > > > *b, size_t idx,
-                    List< std::pair< Key, Value > >::LCIter it);
+                    typename List< std::pair< Key, Value > >::LCIter it);
     };
 
     HashTable(const HashTable &other);
