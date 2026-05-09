@@ -20,7 +20,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable &&other) noex
 
 template < class Key, class Value, class Hash, class Equal >
 saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots, Hash hasher, Equal comparator):
-  data_(Vector(slots)),
+  data_(Vector< List< std::pair< Key, Value > > >(slots)),
   hasher_(hasher),
   comparator_(comparator),
   slots_(slots),
@@ -264,7 +264,7 @@ std::pair< Key, Value > *saldaev::HashTable< Key, Value, Hash, Equal >::Iterator
 }
 
 template < class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal >::Iterator &
+typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator &
 saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++()
 {
   ++list_iter_;
@@ -280,7 +280,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++()
 }
 
 template < class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal >::Iterator
+typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator
 saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++(int)
 {
   Iterator ret = *this;
@@ -331,7 +331,7 @@ const std::pair< Key, Value > *saldaev::HashTable< Key, Value, Hash, Equal >::Co
 }
 
 template < class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator &
+typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator &
 saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++()
 {
   ++list_iter_;
@@ -347,7 +347,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++()
 }
 
 template < class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
+typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
 saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++(int)
 {
   ConstIterator ret = *this;
@@ -374,3 +374,5 @@ bool saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator!=(co
 {
   return !(*this == other);
 }
+
+template class saldaev::HashTable< int, int, std::hash< int >, std::equal_to< int > >;
