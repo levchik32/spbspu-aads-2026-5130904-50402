@@ -173,3 +173,71 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::swap(HashTable &other) noexc
   std::swap(slots_, other.slots_);
   std::swap(elements_, other.elements_);
 }
+
+// ___ Iterator ___
+
+template < class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::Iterator(Vector< List< std::pair< Key, Value > > > *b,
+                                                                  size_t idx,
+                                                                  typename List< std::pair< Key, Value > >::LIter it):
+  buckets_(b),
+  bucket_idx_(idx),
+  list_iter_(it)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+std::pair< Key, Value > &saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator*()
+{
+  return *list_iter_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+std::pair< Key, Value > *saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator->()
+{
+  return &(*list_iter_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator &
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++()
+{
+  ++list_iter_;
+  while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
+    ++bucket_idx_;
+    if (bucket_idx_ == buckets_->getSize()) {
+      list_iter_ = LIter(nullptr);
+      return *this;
+    }
+    list_iter_ = (*buckets_)[bucket_idx_].begin();
+  }
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++(int)
+{
+  Iterator ret = *this;
+  ++list_iter_;
+  while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
+    ++bucket_idx_;
+    if (bucket_idx_ == buckets_->getSize()) {
+      list_iter_ = LIter(nullptr);
+      return ret;
+    }
+    list_iter_ = (*buckets_)[bucket_idx_].begin();
+  }
+  return ret;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator==(const Iterator &other) const
+{
+  return (buckets_ == other.buckets_) && (bucket_idx_ == other.bucket_idx_) && (list_iter_ == other.list_iter_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator!=(const Iterator &other) const
+{
+  return !(*this == other);
+}
