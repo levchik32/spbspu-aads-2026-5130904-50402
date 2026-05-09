@@ -5,7 +5,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable &other)
   data_(other.data_),
   hasher_(other.hasher),
   comparator_(other.comparator),
-  slots_(other.slots),
+  slots_(other.slots_),
   elements_(other.elements_)
 {}
 
@@ -14,7 +14,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable &&other) noex
   data_(std::move(other.data_)),
   hasher_(other.hasher),
   comparator_(other.comparator),
-  slots_(other.slots),
+  slots_(other.slots_),
   elements_(other.elements_)
 {}
 
@@ -26,7 +26,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots, Hash hash
   slots_(slots),
   elements_(0)
 {
-  for (; i < slots; ++i) {
+  for (size_t i = 0; i < slots; ++i) {
     data_.pushBack(List< std::pair< Key, Value > >());
   }
 }
@@ -41,7 +41,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::operator=(const HashTable &other)
 
     hasher_ = other.hasher;
     comparator_ = other.comparator;
-    slots_ = other.slots;
+    slots_ = other.slots_;
     elements_ = other.elements_;
   }
 
@@ -57,7 +57,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::operator=(HashTable &&other) noex
 
   hasher_ = other.hasher;
   comparator_ = other.comparator;
-  slots_ = other.slots;
+  slots_ = other.slots_;
   elements_ = other.elements_;
 
   return *this;
@@ -70,7 +70,7 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
     throw std::invalid_argument("Key already exists");
   }
 
-  data_[hasher_(k) % slots_].newTail({k, v});
+  data_[hasher_(k) % slots_].pushBack({k, v});
   ++elements_;
 }
 
@@ -78,8 +78,8 @@ template < class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::has(Key k) const noexcept
 {
   auto it = data_[hasher_(k) % slots_].begin();
-  while (it.isValid()) {
-    if (comparator_(it.getData().first, k)) {
+  while (it != data_[hasher_(k) % slots_].end()) {
+    if (comparator_(it->first, k)) {
       return true;
     }
     ++it;
@@ -91,9 +91,9 @@ template < class Key, class Value, class Hash, class Equal >
 Value saldaev::HashTable< Key, Value, Hash, Equal >::get(Key k) const
 {
   auto it = data_[hasher_(k) % slots_].begin();
-  while (it.isValid()) {
-    if (comparator_(it.getData().first, k)) {
-      return it.getData().second;
+  while (it != data_[hasher_(k) % slots_].end()) {
+    if (comparator_(it->first, k)) {
+      return it->second;
     }
     ++it;
   }
@@ -105,9 +105,9 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::remove(Key k)
 {
   size_t idx = hasher_(k) % slots_;
   auto it = data_[idx].begin();
-  while (it.isValid()) {
-    if (comparator_(it.getData().first, k)) {
-      data_[idx].cutCurrent(it);
+  while (it != data_[idx].end()) {
+    if (comparator_(it->first, k)) {
+      data_[idx].erase(it);
       --elements_;
       return;
     }
@@ -121,9 +121,9 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::rewrite(Key k, Value v)
 {
   size_t idx = hasher_(k) % slots_;
   auto it = data_[idx].begin();
-  while (it.isValid()) {
-    if (comparator_(it.getData().first, k)) {
-      data_[idx].setData(it, v);
+  while (it != data_[idx].end()) {
+    if (comparator_(it->first, k)) {
+      it->second = v;
       return;
     }
     ++it;
@@ -170,6 +170,6 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::swap(HashTable &other) noexc
   data_.swap(other.data_);
   std::swap(hasher_, other.hasher_);
   std::swap(comparator_, other.comparator_);
-  std::swap(slots_, other.slots);
+  std::swap(slots_, other.slots_);
   std::swap(elements_, other.elements_);
 }
