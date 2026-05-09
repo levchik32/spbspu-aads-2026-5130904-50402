@@ -241,3 +241,70 @@ bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator!=(const I
 {
   return !(*this == other);
 }
+
+// ___ ConstIterator ___
+
+template < class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::ConstIterator(
+    Vector< List< std::pair< Key, Value > > > *b, size_t idx, typename List< std::pair< Key, Value > >::LCIter it):
+  buckets_(b),
+  bucket_idx_(idx),
+  list_iter_(it)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+const std::pair< Key, Value > &saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator*() const
+{
+  return *list_iter_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+const std::pair< Key, Value > *saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator->() const
+{
+  return &(*list_iter_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator &
+saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++()
+{
+  ++list_iter_;
+  while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
+    ++bucket_idx_;
+    if (bucket_idx_ == buckets_->getSize()) {
+      list_iter_ = LCIter(nullptr);
+      return *this;
+    }
+    list_iter_ = (*buckets_)[bucket_idx_].begin();
+  }
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
+saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++(int)
+{
+  ConstIterator ret = *this;
+  ++list_iter_;
+  while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
+    ++bucket_idx_;
+    if (bucket_idx_ == buckets_->getSize()) {
+      list_iter_ = LCIter(nullptr);
+      return ret;
+    }
+    list_iter_ = (*buckets_)[bucket_idx_].begin();
+  }
+  return ret;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator==(const ConstIterator &other) const
+{
+  return (buckets_ == other.buckets_) && (bucket_idx_ == other.bucket_idx_) && (list_iter_ == other.list_iter_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator!=(const ConstIterator &other) const
+{
+  return !(*this == other);
+}
