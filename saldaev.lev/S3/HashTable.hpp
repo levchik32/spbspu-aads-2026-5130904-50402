@@ -26,9 +26,9 @@ namespace saldaev
     private:
       Vector< List< std::pair< Key, Value > > > *buckets_;
       size_t bucket_idx_;
-      LIter< std::pair< Key, Value > > list_iter_;
+      typename List< std::pair< Key, Value > >::LIter list_iter_;
 
-      Iterator(Vector< List< std::pair< Key, Value > > > *b, size_t idx, LIter< std::pair< Key, Value > > it);
+      Iterator(Vector< List< std::pair< Key, Value > > > *b, size_t idx, List< std::pair< Key, Value > >::LIter it);
     };
 
     struct ConstIterator
@@ -46,9 +46,10 @@ namespace saldaev
     private:
       Vector< List< std::pair< Key, Value > > > *buckets_;
       size_t bucket_idx_;
-      LCIter< std::pair< Key, Value > > list_iter_;
+      typename List< std::pair< Key, Value > >::LCIter list_iter_;
 
-      ConstIterator(Vector< List< std::pair< Key, Value > > > *b, size_t idx, LIter< std::pair< Key, Value > > it);
+      ConstIterator(Vector< List< std::pair< Key, Value > > > *b, size_t idx,
+                    List< std::pair< Key, Value > >::LCIter it);
     };
 
     HashTable(const HashTable &other);
@@ -71,10 +72,10 @@ namespace saldaev
     bool empty() const noexcept;
     void swap(HashTable &other) noexcept;
 
-    Iterator< T > begin();
-    Iterator< T > end();
-    ConstIterator< T > begin() const;
-    ConstIterator< T > end() const;
+    Iterator begin();
+    Iterator end();
+    ConstIterator begin() const;
+    ConstIterator end() const;
 
   private:
     Vector< List< std::pair< Key, Value > > > data_;
