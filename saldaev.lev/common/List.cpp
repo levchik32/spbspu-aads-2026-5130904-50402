@@ -212,6 +212,11 @@ size_t saldaev::List< T >::size() const noexcept
 // ___ LCIter ___
 
 template < class T >
+saldaev::List< T >::LCIter::LCIter():
+  curr(nullptr)
+{}
+
+template < class T >
 saldaev::List< T >::LCIter::LCIter(typename List< T >::Node *node):
   curr(node)
 {}
@@ -275,6 +280,11 @@ const T *saldaev::List< T >::LCIter::operator->() const
 }
 
 // ___ LIter ___
+
+template < class T >
+saldaev::List< T >::LIter::LIter():
+  curr(nullptr)
+{}
 
 template < class T >
 saldaev::List< T >::LIter::LIter(typename List::Node *node):
@@ -359,3 +369,5 @@ template struct saldaev::List< int >;
 template struct saldaev::List< long long >;
 template struct saldaev::List< std::string >;
 template struct saldaev::List< saldaev::Queue< std::string > >;
+
+template struct saldaev::List< std::pair< int, int > >;

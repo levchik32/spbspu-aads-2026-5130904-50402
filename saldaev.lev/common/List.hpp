@@ -15,6 +15,8 @@ namespace saldaev
     {
       friend class List;
 
+      LCIter();
+
       LCIter &operator++() noexcept;
       LCIter operator++(int) noexcept;
       LCIter &operator--() noexcept;
@@ -34,6 +36,8 @@ namespace saldaev
     struct LIter
     {
       friend class List;
+
+      LIter();
 
       LIter &operator++() noexcept;
       LIter operator++(int) noexcept;
