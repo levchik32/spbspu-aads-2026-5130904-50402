@@ -205,7 +205,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++()
   while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
     ++bucket_idx_;
     if (bucket_idx_ == buckets_->getSize()) {
-      list_iter_ = LIter(nullptr);
+      list_iter_ = typename List< std::pair< Key, Value > >::LIter(nullptr);
       return *this;
     }
     list_iter_ = (*buckets_)[bucket_idx_].begin();
@@ -222,7 +222,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++(int)
   while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
     ++bucket_idx_;
     if (bucket_idx_ == buckets_->getSize()) {
-      list_iter_ = LIter(nullptr);
+      list_iter_ = typename List< std::pair< Key, Value > >::LIter(nullptr);
       return ret;
     }
     list_iter_ = (*buckets_)[bucket_idx_].begin();
@@ -272,7 +272,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++()
   while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
     ++bucket_idx_;
     if (bucket_idx_ == buckets_->getSize()) {
-      list_iter_ = LCIter(nullptr);
+      list_iter_ = typename List< std::pair< Key, Value > >::LСIter(nullptr);
       return *this;
     }
     list_iter_ = (*buckets_)[bucket_idx_].begin();
@@ -289,7 +289,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++(int)
   while (list_iter_ == (*buckets_)[bucket_idx_].end()) {
     ++bucket_idx_;
     if (bucket_idx_ == buckets_->getSize()) {
-      list_iter_ = LCIter(nullptr);
+      list_iter_ = typename List< std::pair< Key, Value > >::LСIter(nullptr);
       return ret;
     }
     list_iter_ = (*buckets_)[bucket_idx_].begin();
