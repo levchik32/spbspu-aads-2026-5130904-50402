@@ -174,6 +174,58 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::swap(HashTable &other) noexc
   std::swap(elements_, other.elements_);
 }
 
+template < class Key, class Value, class Hash, class Equal >
+typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::begin()
+{
+  if (slots_ == 0) {
+    return Iterator(&data_, 0, typename List< std::pair< Key, Value > >::LIter(nullptr));
+  }
+
+  size_t idx = 0;
+  typename List< std::pair< Key, Value > >::LIter it = data_[0].begin();
+  while (it == data_[idx].end()) {
+    ++idx;
+    if (idx == data_.getSize()) {
+      return Iterator(&data_, idx, typename List< std::pair< Key, Value > >::LIter(nullptr));
+    }
+    it = data_[idx].begin();
+  }
+  return Iterator(&data_, idx, it);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::end()
+{
+  return Iterator(&data_, slots_, typename List< std::pair< Key, Value > >::LIter(nullptr));
+}
+
+template < class Key, class Value, class Hash, class Equal >
+typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
+saldaev::HashTable< Key, Value, Hash, Equal >::begin() const
+{
+  if (slots_ == 0) {
+    return ConstIterator(&data_, 0, typename List< std::pair< Key, Value > >::LCIter(nullptr));
+  }
+
+  size_t idx = 0;
+  typename List< std::pair< Key, Value > >::LIter it = data_[0].begin();
+  while (it == data_[idx].end()) {
+    ++idx;
+    if (idx == data_.getSize()) {
+      return ConstIterator(&data_, idx, typename List< std::pair< Key, Value > >::LCIter(nullptr));
+    }
+    it = data_[idx].begin();
+  }
+  return ConstIterator(&data_, idx, it);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
+saldaev::HashTable< Key, Value, Hash, Equal >::end() const
+{
+  return ConstIterator(&data_, slots_, typename List< std::pair< Key, Value > >::LCIter(nullptr));
+}
+
 // ___ Iterator ___
 
 template < class Key, class Value, class Hash, class Equal >
