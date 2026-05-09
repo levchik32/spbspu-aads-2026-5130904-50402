@@ -45,11 +45,11 @@ namespace saldaev
       bool operator!=(const ConstIterator &other) const;
 
     private:
-      Vector< List< std::pair< Key, Value > > > *buckets_;
+      const Vector< List< std::pair< Key, Value > > > *buckets_;
       size_t bucket_idx_;
       typename List< std::pair< Key, Value > >::LCIter list_iter_;
 
-      ConstIterator(Vector< List< std::pair< Key, Value > > > *b, size_t idx,
+      ConstIterator(const Vector< List< std::pair< Key, Value > > > *b, size_t idx,
                     typename List< std::pair< Key, Value > >::LCIter it);
     };
 

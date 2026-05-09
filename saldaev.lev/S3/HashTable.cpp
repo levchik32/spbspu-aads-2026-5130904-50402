@@ -312,7 +312,8 @@ bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator!=(const I
 
 template < class Key, class Value, class Hash, class Equal >
 saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::ConstIterator(
-    Vector< List< std::pair< Key, Value > > > *b, size_t idx, typename List< std::pair< Key, Value > >::LCIter it):
+    const Vector< List< std::pair< Key, Value > > > *b, size_t idx,
+    typename List< std::pair< Key, Value > >::LCIter it):
   buckets_(b),
   bucket_idx_(idx),
   list_iter_(it)
