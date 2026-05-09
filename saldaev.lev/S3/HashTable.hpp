@@ -13,6 +13,8 @@ namespace saldaev
   public:
     struct Iterator
     {
+      friend class HashTable;
+
     public:
       std::pair< Key, Value > &operator*();
       std::pair< Key, Value > *operator->();
@@ -34,6 +36,8 @@ namespace saldaev
 
     struct ConstIterator
     {
+      friend class HashTable;
+
     public:
       const std::pair< Key, Value > &operator*() const;
       const std::pair< Key, Value > *operator->() const;
