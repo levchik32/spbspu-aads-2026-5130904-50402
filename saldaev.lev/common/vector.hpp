@@ -9,14 +9,42 @@
 namespace saldaev
 {
   template < class T >
-  class Iterator;
-
-  template < class T >
   class Vector
   {
-    friend class Iterator< T >;
-
   public:
+    class Iterator
+    {
+      friend class Vector;
+
+    public:
+      T &operator*() const;
+      T *operator->() const;
+
+      Iterator &operator++();
+      Iterator operator++(int);
+      Iterator &operator--();
+      Iterator operator--(int);
+
+      Iterator operator+(long long n) const;
+      Iterator operator-(long long n) const;
+      Iterator &operator+=(long long n);
+      Iterator &operator-=(long long n);
+      T &operator[](long long n) const;
+      long long operator-(const Iterator &other) const;
+
+      bool operator==(const Iterator &other) const;
+      bool operator!=(const Iterator &other) const;
+      bool operator<(const Iterator &other) const;
+      bool operator<=(const Iterator &other) const;
+      bool operator>(const Iterator &other) const;
+      bool operator>=(const Iterator &other) const;
+
+    private:
+      T *curr_;
+
+      Iterator(T *curr);
+    };
+
     // --- life cycle ---
     explicit Vector(size_t k);
     explicit Vector(std::initializer_list< T > il);
@@ -43,7 +71,7 @@ namespace saldaev
     void popBack() noexcept;
 
     // --- range modifiers ---
-    size_t pushBackRange(Iterator< T > begin, size_t k);
+    size_t pushBackRange(Iterator begin, size_t k);
     void insert(size_t i, const T &val);
     void erase(size_t i);
     void insert(size_t i, const Vector< T > &rhs, size_t beg, size_t end);
@@ -57,13 +85,13 @@ namespace saldaev
     const T &at(size_t id) const;
 
     // --- iterator ---
-    Iterator< T > begin() noexcept;
-    Iterator< T > end() noexcept;
-    void insert(Iterator< T > here, const T &val);
-    void insert(Iterator< T > here, Iterator< T > beg, Iterator< T > end);
-    void insert(Iterator< T > here, std::initializer_list< T > list);
-    void erase(Iterator< T > beg, Iterator< T > end);
-    void erase(Iterator< T > beg, size_t k);
+    Iterator begin() noexcept;
+    Iterator end() noexcept;
+    void insert(Iterator here, const T &val);
+    void insert(Iterator here, Iterator beg, Iterator end);
+    void insert(Iterator here, std::initializer_list< T > list);
+    void erase(Iterator beg, Iterator end);
+    void erase(Iterator beg, size_t k);
 
   private:
     // --- data members ---
@@ -73,40 +101,6 @@ namespace saldaev
     // --- internal helpers ---
     void pushBackImpl(const T &val);
     void reserve(size_t pos, size_t count);
-  };
-
-  template < class T >
-  class Iterator
-  {
-    friend class Vector< T >;
-
-  public:
-    T &operator*() const;
-    T *operator->() const;
-
-    Iterator &operator++();
-    Iterator operator++(int);
-    Iterator &operator--();
-    Iterator operator--(int);
-
-    Iterator operator+(long long n) const;
-    Iterator operator-(long long n) const;
-    Iterator &operator+=(long long n);
-    Iterator &operator-=(long long n);
-    T &operator[](long long n) const;
-    long long operator-(const Iterator &other) const;
-
-    bool operator==(const Iterator &other) const;
-    bool operator!=(const Iterator &other) const;
-    bool operator<(const Iterator &other) const;
-    bool operator<=(const Iterator &other) const;
-    bool operator>(const Iterator &other) const;
-    bool operator>=(const Iterator &other) const;
-
-  private:
-    T *curr_;
-
-    Iterator(T *curr);
   };
 }
 
@@ -318,7 +312,7 @@ void saldaev::Vector< T >::popBack() noexcept
 
 // --- range modifiers ---
 template < class T >
-size_t saldaev::Vector< T >::pushBackRange(Iterator< T > begin, size_t k)
+size_t saldaev::Vector< T >::pushBackRange(typename Vector< T >::Iterator begin, size_t k)
 {
   reserve(size_ + k);
   size_t i = 0;
@@ -438,25 +432,25 @@ const T &saldaev::Vector< T >::at(size_t id) const
 
 // --- iterator ---
 template < class T >
-saldaev::Iterator< T > saldaev::Vector< T >::begin() noexcept
+typename saldaev::Vector< T >::Iterator saldaev::Vector< T >::begin() noexcept
 {
-  return Iterator< T >(data_);
+  return Iterator(data_);
 }
 
 template < class T >
-saldaev::Iterator< T > saldaev::Vector< T >::end() noexcept
+typename saldaev::Vector< T >::Iterator saldaev::Vector< T >::end() noexcept
 {
-  return Iterator< T >(data_ + size_);
+  return Iterator(data_ + size_);
 }
 
 template < class T >
-void saldaev::Vector< T >::insert(Iterator< T > here, const T &val)
+void saldaev::Vector< T >::insert(Iterator here, const T &val)
 {
   insert(here.curr_ - data_, val);
 }
 
 template < class T >
-void saldaev::Vector< T >::insert(Iterator< T > here, Iterator< T > beg, Iterator< T > end)
+void saldaev::Vector< T >::insert(Iterator here, Iterator beg, Iterator end)
 {
   if (beg > end) {
     throw std::logic_error("");
@@ -474,7 +468,7 @@ void saldaev::Vector< T >::insert(Iterator< T > here, Iterator< T > beg, Iterato
 }
 
 template < class T >
-void saldaev::Vector< T >::insert(Iterator< T > here, std::initializer_list< T > list)
+void saldaev::Vector< T >::insert(Iterator here, std::initializer_list< T > list)
 {
   Vector< T > cpy = *this;
   size_t i = here - begin();
@@ -488,7 +482,7 @@ void saldaev::Vector< T >::insert(Iterator< T > here, std::initializer_list< T >
 }
 
 template < class T >
-void saldaev::Vector< T >::erase(Iterator< T > beg, Iterator< T > end)
+void saldaev::Vector< T >::erase(Iterator beg, Iterator end)
 {
   if (beg > end) {
     throw std::logic_error("");
@@ -497,7 +491,7 @@ void saldaev::Vector< T >::erase(Iterator< T > beg, Iterator< T > end)
 }
 
 template < class T >
-void saldaev::Vector< T >::erase(Iterator< T > beg, size_t k)
+void saldaev::Vector< T >::erase(Iterator beg, size_t k)
 {
   erase(beg - begin(), beg - begin() + k);
 }
@@ -554,122 +548,122 @@ void saldaev::Vector< T >::reserve(size_t pos, size_t count)
 
 // --- ITERATOR ---
 template < class T >
-saldaev::Iterator< T >::Iterator(T *curr):
+saldaev::Vector< T >::Iterator::Iterator(T *curr):
   curr_(curr)
 {}
 
 template < class T >
-T &saldaev::Iterator< T >::operator*() const
+T &saldaev::Vector< T >::Iterator::operator*() const
 {
   return *curr_;
 }
 
 template < class T >
-T *saldaev::Iterator< T >::operator->() const
+T *saldaev::Vector< T >::Iterator::operator->() const
 {
   return curr_;
 }
 
 template < class T >
-saldaev::Iterator< T > &saldaev::Iterator< T >::operator++()
+typename saldaev::Vector< T >::Iterator &saldaev::Vector< T >::Iterator::operator++()
 {
   ++curr_;
   return *this;
 }
 
 template < class T >
-saldaev::Iterator< T > saldaev::Iterator< T >::operator++(int)
+typename saldaev::Vector< T >::Iterator saldaev::Vector< T >::Iterator::operator++(int)
 {
-  Iterator< T > tmp = *this;
+  Iterator tmp = *this;
   ++curr_;
   return tmp;
 }
 
 template < class T >
-saldaev::Iterator< T > &saldaev::Iterator< T >::operator--()
+typename saldaev::Vector< T >::Iterator &saldaev::Vector< T >::Iterator::operator--()
 {
   --curr_;
   return *this;
 }
 
 template < class T >
-saldaev::Iterator< T > saldaev::Iterator< T >::operator--(int)
+typename saldaev::Vector< T >::Iterator saldaev::Vector< T >::Iterator::operator--(int)
 {
-  Iterator< T > tmp = *this;
+  Iterator tmp = *this;
   --curr_;
   return tmp;
 }
 
 template < class T >
-saldaev::Iterator< T > saldaev::Iterator< T >::operator+(long long n) const
+typename saldaev::Vector< T >::Iterator saldaev::Vector< T >::Iterator::operator+(long long n) const
 {
   return Iterator(curr_ + n);
 }
 
 template < class T >
-saldaev::Iterator< T > saldaev::Iterator< T >::operator-(long long n) const
+typename saldaev::Vector< T >::Iterator saldaev::Vector< T >::Iterator::operator-(long long n) const
 {
-  return Iterator< T >(curr_ - n);
+  return Iterator(curr_ - n);
 }
 
 template < class T >
-saldaev::Iterator< T > &saldaev::Iterator< T >::operator+=(long long n)
+typename saldaev::Vector< T >::Iterator &saldaev::Vector< T >::Iterator::operator+=(long long n)
 {
   curr_ += n;
   return *this;
 }
 
 template < class T >
-saldaev::Iterator< T > &saldaev::Iterator< T >::operator-=(long long n)
+typename saldaev::Vector< T >::Iterator &saldaev::Vector< T >::Iterator::operator-=(long long n)
 {
   curr_ -= n;
   return *this;
 }
 
 template < class T >
-T &saldaev::Iterator< T >::operator[](long long n) const
+T &saldaev::Vector< T >::Iterator::operator[](long long n) const
 {
   return *(curr_ + n);
 }
 
 template < class T >
-long long saldaev::Iterator< T >::operator-(const Iterator< T > &other) const
+long long saldaev::Vector< T >::Iterator::operator-(const Vector< T >::Iterator &other) const
 {
   return curr_ - other.curr_;
 }
 
 template < class T >
-bool saldaev::Iterator< T >::operator==(const Iterator< T > &other) const
+bool saldaev::Vector< T >::Iterator::operator==(const Iterator &other) const
 {
   return curr_ == other.curr_;
 }
 
 template < class T >
-bool saldaev::Iterator< T >::operator!=(const Iterator< T > &other) const
+bool saldaev::Vector< T >::Iterator::operator!=(const Iterator &other) const
 {
   return !(*this == other);
 }
 
 template < class T >
-bool saldaev::Iterator< T >::operator<(const Iterator< T > &other) const
+bool saldaev::Vector< T >::Iterator::operator<(const Iterator &other) const
 {
   return curr_ < other.curr_;
 }
 
 template < class T >
-bool saldaev::Iterator< T >::operator<=(const Iterator< T > &other) const
+bool saldaev::Vector< T >::Iterator::operator<=(const Iterator &other) const
 {
   return curr_ <= other.curr_;
 }
 
 template < class T >
-bool saldaev::Iterator< T >::operator>(const Iterator< T > &other) const
+bool saldaev::Vector< T >::Iterator::operator>(const Iterator &other) const
 {
   return curr_ > other.curr_;
 }
 
 template < class T >
-bool saldaev::Iterator< T >::operator>=(const Iterator< T > &other) const
+bool saldaev::Vector< T >::Iterator::operator>=(const Iterator &other) const
 {
   return curr_ >= other.curr_;
 }
