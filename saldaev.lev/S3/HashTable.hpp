@@ -59,7 +59,7 @@ namespace saldaev
 
     HashTable(const HashTable &other);
     HashTable(HashTable &&other) noexcept;
-    HashTable(size_t slots, Hash hasher, Equal comparator);
+    HashTable(size_t slots, Hash hasher, Equal key_eq);
     ~HashTable() = default;
     HashTable &operator=(const HashTable &other);
     HashTable &operator=(HashTable &&other) noexcept;
@@ -85,7 +85,7 @@ namespace saldaev
   private:
     Vector< List< std::pair< Key, Value > > > data_;
     Hash hasher_;
-    Equal comparator_;
+    Equal key_eq_;
     size_t slots_ = 0;
     size_t elements_ = 0;
   };
