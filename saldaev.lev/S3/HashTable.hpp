@@ -67,6 +67,7 @@ namespace saldaev
     void add(Key k, Value v);
     bool has(Key k) const noexcept;
     Value get(Key k) const;
+    Value &at(Key k);
     void remove(Key k);
     void rewrite(Key k, Value v);
 

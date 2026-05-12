@@ -101,6 +101,19 @@ Value saldaev::HashTable< Key, Value, Hash, Equal >::get(Key k) const
 }
 
 template < class Key, class Value, class Hash, class Equal >
+Value &saldaev::HashTable< Key, Value, Hash, Equal >::at(Key k)
+{
+  auto it = data_[hasher_(k) % slots_].begin();
+  while (it != data_[hasher_(k) % slots_].end()) {
+    if (key_eq_(it->first, k)) {
+      return it->second;
+    }
+    ++it;
+  }
+  throw std::invalid_argument("Key does not exist");
+}
+
+template < class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::remove(Key k)
 {
   size_t idx = hasher_(k) % slots_;
