@@ -11,18 +11,17 @@ namespace saldaev
   private:
     struct Hasher
     {
-      size_t operator()(const std::pair< std::string, std::string >) const;
+      size_t operator()(const std::pair< std::string, std::string > &p) const;
     };
 
     struct KeyEqual
     {
-      bool operator()(const std::pair< std::string, std::string >, const std::pair< std::string, std::string >) const;
+      bool operator()(const std::pair< std::string, std::string > &st,
+                      const std::pair< std::string, std::string > &nd) const;
     };
 
     HashTable< std::pair< std::string, std::string >, Vector< size_t >, Hasher, KeyEqual > edges;
     Vector< std::string > vertexes;
-
-    void removeEdgesOf(std::string);
 
   public:
     Graph();

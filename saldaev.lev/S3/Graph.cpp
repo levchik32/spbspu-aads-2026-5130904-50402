@@ -1,4 +1,5 @@
 #include "Graph.hpp"
+#include <boost/hash2/xxhash.hpp>
 
 saldaev::Graph::Graph():
   edges(10, Hasher(), KeyEqual()),
@@ -97,4 +98,18 @@ void saldaev::Graph::clear()
 {
   edges.clear();
   vertexes.erase(0, vertexes.getSize());
+}
+
+size_t saldaev::Graph::Hasher::operator()(const std::pair< std::string, std::string > &p) const
+{
+  boost::hash2::xxhash_64 hash;
+  hash.update(p.first.data(), p.first.size());
+  hash.update(p.second.data(), p.second.size());
+  return static_cast< size_t >(hash.result());
+}
+
+bool saldaev::Graph::KeyEqual::operator()(const std::pair< std::string, std::string > &st,
+                                          const std::pair< std::string, std::string > &nd) const
+{
+  return (st.first == nd.first) && (st.second == nd.second);
 }
