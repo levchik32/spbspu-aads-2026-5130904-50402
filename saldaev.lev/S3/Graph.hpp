@@ -25,6 +25,8 @@ namespace saldaev
     void removeEdgesOf(std::string);
 
   public:
+    Graph();
+
     Vector< std::string > vertices() const;
     bool hasVertex(const std::string &name) const;
     void addVertex(const std::string &name);
