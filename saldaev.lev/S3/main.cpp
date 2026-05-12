@@ -2,10 +2,11 @@
 #include <fstream>
 #include <iostream>
 
+using GraphStorage =
+    saldaev::HashTable< std::string, saldaev::Graph *, std::hash< std::string >, std::equal_to< std::string > >;
+
 int main(int argc, char *argv[])
 {
-  using GraphStorage =
-      saldaev::HashTable< std::string, saldaev::Graph *, std::hash< std::string >, std::equal_to< std::string > >;
   using Command = void (*)(std::istream &in, std::ostream &out, GraphStorage &graphs);
   using Commands = saldaev::HashTable< std::string, Command, std::hash< std::string >, std::equal_to< std::string > >;
 
@@ -72,5 +73,58 @@ int main(int argc, char *argv[])
   while (it != graphs.end()) {
     delete it->second;
     ++it;
+  }
+}
+
+template < class T >
+void sort(saldaev::Vector< T > &v)
+{
+  if (v.getSize() < 2)
+    return;
+
+  bool swapped = true;
+  while (swapped) {
+    swapped = false;
+    auto curr = v.begin();
+    auto next = curr;
+    ++next;
+    while (next != v.end()) {
+      if (*next < *curr) {
+        std::swap(*curr, *next);
+        swapped = true;
+      }
+      ++curr;
+      ++next;
+    }
+  }
+}
+
+void handleGraphs(std::istream &in, std::ostream &out, GraphStorage &graphs)
+{
+  saldaev::Vector< std::string > g(0);
+  auto it = graphs.begin();
+  while (it != graphs.end()) {
+    g.pushBack(it->first);
+    ++it;
+  }
+  sort(g);
+  for (size_t i = 0; i < g.getSize(); ++i) {
+    out << g[i] << '\n';
+  }
+}
+
+void handleVertexes(std::istream &in, std::ostream &out, GraphStorage &graphs)
+{
+  std::string name = "";
+  in >> name;
+  if (!(graphs.has(name))) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  saldaev::Vector< std::string > v = (graphs.get(name))->vertices();
+  sort(v);
+  for (size_t i = 0; i < v.getSize(); ++i) {
+    out << v[i] << '\n';
   }
 }
