@@ -87,3 +87,14 @@ const saldaev::Vector< std::pair< std::string, size_t > > saldaev::Graph::incomi
   }
   return ret;
 }
+
+void saldaev::Graph::clearEdges()
+{
+  edges.clear();
+}
+
+void saldaev::Graph::clear()
+{
+  edges.clear();
+  vertexes.erase(0, vertexes.getSize());
+}
