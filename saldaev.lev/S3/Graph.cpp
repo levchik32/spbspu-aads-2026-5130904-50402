@@ -29,3 +29,31 @@ void saldaev::Graph::addVertex(const std::string &name)
   }
   vertexes.pushBack(name);
 }
+
+bool saldaev::Graph::hasEdge(const std::string &from, const std::string &to) const
+{
+  return edges.has({from, to});
+}
+
+void saldaev::Graph::addEdge(const std::string &from, const std::string &to, size_t weight)
+{
+  if (!hasEdge(from, to)) {
+    edges.add({from, to}, Vector< size_t >(1));
+  }
+  edges.at({from, to}).pushBack(weight);
+}
+
+void saldaev::Graph::removeEdge(const std::string &from, const std::string &to, size_t weight)
+{
+  Vector< size_t > &v = edges.at({from, to});
+  for (size_t i = 0; i < v.getSize(); ++i) {
+    if (v[i] == weight) {
+      v.erase(i);
+      if (v.isEmpty()) {
+        edges.remove({from, to});
+      }
+      return;
+    }
+  }
+  throw std::logic_error("no such edge");
+}
