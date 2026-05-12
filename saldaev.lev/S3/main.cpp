@@ -6,6 +6,10 @@ int main(int argc, char *argv[])
 {
   using GraphStorage =
       saldaev::HashTable< std::string, saldaev::Graph *, std::hash< std::string >, std::equal_to< std::string > >;
+  using Command = void (*)(std::istream &in, std::ostream &out, GraphStorage &graphs);
+  using Commands = saldaev::HashTable< std::string, Command, std::hash< std::string >, std::equal_to< std::string > >;
+
+  Commands commands(9, std::hash< std::string >(), std::equal_to< std::string >());
 
   if (argc != 2) {
     std::cerr << "wrong amoung of arguments";
@@ -54,6 +58,15 @@ int main(int argc, char *argv[])
   }
 
   file.close();
+
+  std::string cmd = "";
+  while (std::cin >> cmd) {
+    if (commands.has(cmd)) {
+      commands.get(cmd)(std::cin, std::cout, graphs);
+    } else {
+      std::cout << "<INVALID COMMAND>\n";
+    }
+  }
 
   auto it = graphs.begin();
   while (it != graphs.end()) {
