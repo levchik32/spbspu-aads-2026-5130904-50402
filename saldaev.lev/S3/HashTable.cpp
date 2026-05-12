@@ -1,4 +1,5 @@
 #include "HashTable.hpp"
+#include "Graph.hpp"
 
 template < class Key, class Value, class Hash, class Equal >
 saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable &other):
@@ -390,3 +391,6 @@ bool saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator!=(co
 }
 
 template class saldaev::HashTable< int, int, std::hash< int >, std::equal_to< int > >;
+
+template class saldaev::HashTable< std::pair< std::string, std::string >, saldaev::Vector< size_t >,
+                                   saldaev::Graph::Hasher, saldaev::Graph::KeyEqual >;

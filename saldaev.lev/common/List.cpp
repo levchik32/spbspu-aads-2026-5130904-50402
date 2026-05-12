@@ -1,5 +1,6 @@
 #include "List.hpp"
 #include "../S2/queue.hpp"
+#include "vector.hpp"
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -371,3 +372,4 @@ template struct saldaev::List< std::string >;
 template struct saldaev::List< saldaev::Queue< std::string > >;
 
 template struct saldaev::List< std::pair< int, int > >;
+template struct saldaev::List< std::pair< std::pair< std::string, std::string >, saldaev::Vector< size_t > > >;
