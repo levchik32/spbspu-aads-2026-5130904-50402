@@ -57,3 +57,33 @@ void saldaev::Graph::removeEdge(const std::string &from, const std::string &to, 
   }
   throw std::logic_error("no such edge");
 }
+
+const saldaev::Vector< std::pair< std::string, size_t > > saldaev::Graph::outgoingEdges(const std::string &name) const
+{
+  Vector< std::pair< std::string, size_t > > ret(0);
+
+  for (size_t i = 0; i < vertexes.getSize(); ++i) {
+    if (hasEdge(name, vertexes[i])) {
+      const Vector< size_t > &v = edges.get({name, vertexes[i]});
+      for (size_t j = 0; j < v.getSize(); ++j) {
+        ret.pushBack({vertexes[i], v[j]});
+      }
+    }
+  }
+  return ret;
+}
+
+const saldaev::Vector< std::pair< std::string, size_t > > saldaev::Graph::incomingEdges(const std::string &name) const
+{
+  Vector< std::pair< std::string, size_t > > ret(0);
+
+  for (size_t i = 0; i < vertexes.getSize(); ++i) {
+    if (hasEdge(vertexes[i], name)) {
+      const Vector< size_t > &v = edges.get({vertexes[i], name});
+      for (size_t j = 0; j < v.getSize(); ++j) {
+        ret.pushBack({vertexes[i], v[j]});
+      }
+    }
+  }
+  return ret;
+}
