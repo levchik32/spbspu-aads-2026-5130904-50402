@@ -128,3 +128,57 @@ void handleVertexes(std::istream &in, std::ostream &out, GraphStorage &graphs)
     out << v[i] << '\n';
   }
 }
+
+void handleOutbound(std::istream &in, std::ostream &out, GraphStorage &graphs)
+{
+  std::string name = "";
+  in >> name;
+  if (!(graphs.has(name))) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  std::string vertex = "";
+  in >> vertex;
+  if (!(graphs.get(name)->hasVertex(vertex))) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  saldaev::Vector< std::pair< std::string, saldaev::Vector< size_t > > > v = (graphs.get(name))->outgoingEdges(vertex);
+  for (size_t i = 0; i < v.getSize(); ++i) {
+    out << v[i].first;
+    saldaev::Vector< size_t > w = v[i].second;
+    for (size_t j = 0; j < w.getSize(); ++j) {
+      out << ' ' << w[j];
+    }
+    out << '\n';
+  }
+}
+
+void handleInbound(std::istream &in, std::ostream &out, GraphStorage &graphs)
+{
+  std::string name = "";
+  in >> name;
+  if (!(graphs.has(name))) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  std::string vertex = "";
+  in >> vertex;
+  if (!(graphs.get(name)->hasVertex(vertex))) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  saldaev::Vector< std::pair< std::string, saldaev::Vector< size_t > > > v = (graphs.get(name))->incomingEdges(vertex);
+  for (size_t i = 0; i < v.getSize(); ++i) {
+    out << v[i].first;
+    saldaev::Vector< size_t > w = v[i].second;
+    for (size_t j = 0; j < w.getSize(); ++j) {
+      out << ' ' << w[j];
+    }
+    out << '\n';
+  }
+}
