@@ -34,8 +34,8 @@ namespace saldaev
     void addEdge(const std::string &from, const std::string &to, size_t weight);
     void removeEdge(const std::string &from, const std::string &to, size_t weight);
 
-    const Vector< std::pair< std::string, size_t > > outgoingEdges(const std::string &name) const;
-    const Vector< std::pair< std::string, size_t > > incomingEdges(const std::string &name) const;
+    const Vector< std::pair< std::string, Vector< size_t > > > outgoingEdges(const std::string &name) const;
+    const Vector< std::pair< std::string, Vector< size_t > > > incomingEdges(const std::string &name) const;
 
     void clearEdges();
     void clear();

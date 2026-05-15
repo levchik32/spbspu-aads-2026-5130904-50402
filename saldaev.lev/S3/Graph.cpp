@@ -1,6 +1,34 @@
 #include "Graph.hpp"
 #include <boost/hash2/xxhash.hpp>
 
+namespace
+{
+  template < class T >
+  saldaev::Vector< T > sort(const saldaev::Vector< T > &orig)
+  {
+    saldaev::Vector< T > v(orig);
+    if (v.getSize() < 2)
+      return v;
+
+    bool swapped = true;
+    while (swapped) {
+      swapped = false;
+      auto curr = v.begin();
+      auto next = curr;
+      ++next;
+      while (next != v.end()) {
+        if (*next < *curr) {
+          std::swap(*curr, *next);
+          swapped = true;
+        }
+        ++curr;
+        ++next;
+      }
+    }
+    return v;
+  }
+}
+
 saldaev::Graph::Graph():
   edges(10, Hasher(), KeyEqual()),
   vertexes(0)
@@ -59,31 +87,31 @@ void saldaev::Graph::removeEdge(const std::string &from, const std::string &to, 
   throw std::logic_error("no such edge");
 }
 
-const saldaev::Vector< std::pair< std::string, size_t > > saldaev::Graph::outgoingEdges(const std::string &name) const
+const saldaev::Vector< std::pair< std::string, saldaev::Vector< size_t > > >
+saldaev::Graph::outgoingEdges(const std::string &name) const
 {
-  Vector< std::pair< std::string, size_t > > ret(0);
+  Vector< std::pair< std::string, Vector< size_t > > > ret(0);
 
-  for (size_t i = 0; i < vertexes.getSize(); ++i) {
-    if (hasEdge(name, vertexes[i])) {
-      const Vector< size_t > &v = edges.get({name, vertexes[i]});
-      for (size_t j = 0; j < v.getSize(); ++j) {
-        ret.pushBack({vertexes[i], v[j]});
-      }
+  Vector< std::string > sVertexes = sort(vertexes);
+  for (size_t i = 0; i < sVertexes.getSize(); ++i) {
+    if (hasEdge(name, sVertexes[i])) {
+      Vector< size_t > sortedWeights = sort(edges.get({name, sVertexes[i]}));
+      ret.pushBack({sVertexes[i], sortedWeights});
     }
   }
   return ret;
 }
 
-const saldaev::Vector< std::pair< std::string, size_t > > saldaev::Graph::incomingEdges(const std::string &name) const
+const saldaev::Vector< std::pair< std::string, saldaev::Vector< size_t > > >
+saldaev::Graph::incomingEdges(const std::string &name) const
 {
-  Vector< std::pair< std::string, size_t > > ret(0);
+  Vector< std::pair< std::string, Vector< size_t > > > ret(0);
 
-  for (size_t i = 0; i < vertexes.getSize(); ++i) {
-    if (hasEdge(vertexes[i], name)) {
-      const Vector< size_t > &v = edges.get({vertexes[i], name});
-      for (size_t j = 0; j < v.getSize(); ++j) {
-        ret.pushBack({vertexes[i], v[j]});
-      }
+  Vector< std::string > sVertexes = sort(vertexes);
+  for (size_t i = 0; i < sVertexes.getSize(); ++i) {
+    if (hasEdge(sVertexes[i], name)) {
+      Vector< size_t > sortedWeights = sort(edges.get({sVertexes[i], name}));
+      ret.pushBack({sVertexes[i], sortedWeights});
     }
   }
   return ret;
