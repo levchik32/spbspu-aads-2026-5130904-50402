@@ -69,6 +69,7 @@ namespace saldaev
     void pushBack(const T &);
     void pushFront(const T &);
     void popBack() noexcept;
+    void remove(const T &);
 
     // --- range modifiers ---
     size_t pushBackRange(Iterator begin, size_t k);
@@ -308,6 +309,18 @@ void saldaev::Vector< T >::popBack() noexcept
     --size_;
     data_[size_].~T();
   }
+}
+
+template < class T >
+void saldaev::Vector< T >::remove(const T &d)
+{
+  for (size_t i = 0; i < size_; ++i) {
+    if (data_[i] == d) {
+      erase(i);
+      return;
+    }
+  }
+  throw std::out_of_range("Element not found in Vector");
 }
 
 // --- range modifiers ---
