@@ -78,6 +78,7 @@ namespace saldaev
     void insert(size_t i, const Vector< T > &rhs, size_t beg, size_t end);
     void insert(size_t i, const Vector< T > &rhs);
     void erase(size_t beg, size_t end);
+    void clear();
 
     // --- element access ---
     T &operator[](size_t index) noexcept;
@@ -409,6 +410,12 @@ void saldaev::Vector< T >::erase(size_t beg, size_t end)
     cpy.data_[cpy.size_ + j].~T();
   }
   swap(cpy);
+}
+
+template < class T >
+void saldaev::Vector< T >::clear()
+{
+  erase(0, size_);
 }
 
 // --- element access ---
