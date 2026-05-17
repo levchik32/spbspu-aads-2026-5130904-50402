@@ -25,6 +25,8 @@ namespace saldaev
       T data;
       Vector< Edge * > outgoing_edges;
       Vector< Edge * > incoming_edges;
+
+      Vertex(T d);
     };
 
     struct Edge
@@ -32,6 +34,8 @@ namespace saldaev
       S data;
       Vertex *from;
       Vertex *to;
+
+      Edge(S d, Vertex *f, Vertex *t);
     };
 
     HashTable< std::string, Vertex *, Hasher, KeyEqual > vertexes;
@@ -41,6 +45,13 @@ namespace saldaev
     Vertex *findVertex(const std::string &id);
 
   public:
+    Graph();
+    Graph(const Graph &) = delete;
+    Graph(Graph &&) = delete;
+    Graph &operator=(const Graph &) = delete;
+    Graph &operator=(Graph &&) = delete;
+    ~Graph();
+
     Vector< std::string > vertexIds() const;
     bool hasVertex(const std::string &id) const;
     void addVertex(const T &data, const std::string &id);
