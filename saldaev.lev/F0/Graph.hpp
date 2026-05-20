@@ -22,11 +22,12 @@ namespace saldaev
     struct Edge;
     struct Vertex
     {
+      std::string id;
       T data;
       Vector< Edge * > outgoing_edges;
       Vector< Edge * > incoming_edges;
 
-      Vertex(T d);
+      Vertex(std::string i, T d);
     };
 
     struct Edge
@@ -81,7 +82,8 @@ namespace saldaev
 }
 
 template < class T, class S >
-saldaev::Graph< T, S >::Vertex::Vertex(T d):
+saldaev::Graph< T, S >::Vertex::Vertex(std::string i, T d):
+  id(i),
   data(d),
   outgoing_edges(0),
   incoming_edges(0)
@@ -159,7 +161,7 @@ void saldaev::Graph< T, S >::addVertex(const T &data, const std::string &id)
     throw std::invalid_argument("ununique vertex name");
   }
 
-  Vertex *nV = new Vertex(data);
+  Vertex *nV = new Vertex(id, data);
   vertexes.add(id, nV);
 }
 
