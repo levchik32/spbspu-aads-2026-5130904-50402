@@ -242,3 +242,86 @@ void handleCut(std::istream &in, std::ostream &out, GraphStorage &graphs)
     out << "<INVALID COMMAND>\n";
   }
 }
+
+void handleCreate(std::istream &in, std::ostream &out, GraphStorage &graphs)
+{
+  std::string gName;
+  in >> gName;
+  if (graphs.has(gName)) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  size_t n = 0;
+  if (!(in >> n)) {
+    out << "<INVALID COMMAND>\n";
+    in.clear();
+    return;
+  }
+
+  saldaev::Graph *graph = new saldaev::Graph;
+  for (; n > 0; --n) {
+    std::string vName;
+    in >> vName;
+    if (graph->hasVertex(vName)) {
+      out << "<INVALID COMMAND>\n";
+      delete graph;
+      return;
+    }
+    graph->addVertex(vName);
+  }
+
+  graphs.add(gName, graph);
+}
+
+void handleMerge(std::istream &in, std::ostream &out, GraphStorage &graphs)
+{
+  std::string gName;
+  in >> gName;
+  if (graphs.has(gName)) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  std::string gName1, gName2;
+  in >> gName1 >> gName2;
+  if (!(graphs.has(gName1)) || !(graphs.has(gName2))) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  saldaev::Graph *graph = new saldaev::Graph;
+  saldaev::Graph *g1 = graphs.get(gName1);
+  saldaev::Graph *g2 = graphs.get(gName2);
+  const saldaev::Vector< std::string > &v1 = g1->vertices();
+  for (size_t i = 0; i < v1.getSize(); ++i) {
+    graph->addVertex(v1[i]);
+  }
+  const saldaev::Vector< std::string > &v2 = g2->vertices();
+  for (size_t i = 0; i < v2.getSize(); ++i) {
+    if (!(graph->hasVertex(v2[i]))) {
+      graph->addVertex(v2[i]);
+    }
+  }
+
+  auto edg = g1->getEdges();
+  auto it = edg.begin();
+  while (it != edg.end()) {
+    saldaev::Vector< size_t > w = it->second;
+    for (size_t i = 0; i < w.getSize(); ++i) {
+      graph->addEdge(it->first.first, it->first.second, w[i]);
+    }
+    ++it;
+  }
+  edg = g2->getEdges();
+  auto it = edg.begin();
+  while (it != edg.end()) {
+    saldaev::Vector< size_t > w = it->second;
+    for (size_t i = 0; i < w.getSize(); ++i) {
+      graph->addEdge(it->first.first, it->first.second, w[i]);
+    }
+    ++it;
+  }
+
+  graphs.add(gName, graph);
+}
