@@ -198,6 +198,7 @@ void handleBind(std::istream &in, std::ostream &out, GraphStorage &graphs)
   size_t w = 0;
   if (!(in >> vName1 >> vName2 >> w)) {
     out << "<INVALID COMMAND>\n";
+    in.clear();
     return;
   }
   if (!(graph->hasVertex(vName1))) {
@@ -225,6 +226,7 @@ void handleCut(std::istream &in, std::ostream &out, GraphStorage &graphs)
   size_t w = 0;
   if (!(in >> vName1 >> vName2 >> w)) {
     out << "<INVALID COMMAND>\n";
+    in.clear();
     return;
   }
   if (!(graph->hasVertex(vName1)) || !(graph->hasVertex(vName2))) {
