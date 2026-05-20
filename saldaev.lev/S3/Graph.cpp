@@ -117,6 +117,13 @@ saldaev::Graph::incomingEdges(const std::string &name) const
   return ret;
 }
 
+const saldaev::HashTable< std::pair< std::string, std::string >, saldaev::Vector< size_t >, saldaev::Graph::Hasher,
+                          saldaev::Graph::KeyEqual > &
+saldaev::Graph::getEdges() const
+{
+  return edges;
+}
+
 void saldaev::Graph::clearEdges()
 {
   edges.clear();

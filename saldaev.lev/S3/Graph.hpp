@@ -36,6 +36,7 @@ namespace saldaev
 
     const Vector< std::pair< std::string, Vector< size_t > > > outgoingEdges(const std::string &name) const;
     const Vector< std::pair< std::string, Vector< size_t > > > incomingEdges(const std::string &name) const;
+    const HashTable< std::pair< std::string, std::string >, Vector< size_t >, Hasher, KeyEqual > &getEdges() const;
 
     void clearEdges();
     void clear();
