@@ -194,4 +194,130 @@ T saldaev::Graph< T, S >::getVertexData(const std::string &id) const
   return vertexes.get(id)->data;
 }
 
+template < class T, class S >
+saldaev::Vector< std::pair< std::string, std::string > > saldaev::Graph< T, S >::edgesIds() const
+{
+  Vector< std::pair< std::string, std::string > > ret(0);
+  for (size_t i = 0; i < edges.getSize(); ++i) {
+    ret.pushBack({edges[i]->from->id, edges[i]->to->id});
+  }
+  return ret;
+}
+
+template < class T, class S >
+bool saldaev::Graph< T, S >::hasEdge(const std::string &from, const std::string &to) const
+{
+  if (!(vertexes.has(from)) || !(vertexes.has(to))) {
+    throw std::logic_error("no vertex with this name");
+  }
+
+  Vertex *v1 = vertexes.get(from);
+  Vertex *v2 = vertexes.get(to);
+
+  const Vector< Edge * > &e = v1->outgoing_edges;
+  for (size_t i = 0; i < e.getSize(); ++i) {
+    if (e[i]->to == v2) {
+      return true;
+    }
+  }
+  return false;
+}
+
+template < class T, class S >
+void saldaev::Graph< T, S >::addEdge(const std::string &from, const std::string &to, const S &data)
+{
+  if (hasEdge(from, to)) {
+    throw std::logic_error("this edge is already exist");
+  }
+
+  Vertex *v1 = vertexes.get(from);
+  Vertex *v2 = vertexes.get(to);
+
+  Edge *e = new Edge(data, v1, v2);
+  try {
+    v1->outgoing_edges.pushBack(e);
+  } catch (...) {
+    delete e;
+    throw;
+  }
+  try {
+    v2->incoming_edges.pushBack(e);
+  } catch (...) {
+    v1->outgoing_edges.remove(e);
+    delete e;
+    throw;
+  }
+  try {
+    edges.pushBack(e);
+  } catch (...) {
+    v1->outgoing_edges.remove(e);
+    v2->incoming_edges.remove(e);
+    delete e;
+    throw;
+  }
+}
+
+template < class T, class S >
+void saldaev::Graph< T, S >::removeEdge(const std::string &from, const std::string &to)
+{
+  if (!(vertexes.has(from)) || !(vertexes.has(to))) {
+    throw std::logic_error("no vertex with this name");
+  }
+
+  Vertex *v1 = vertexes.get(from);
+  Vertex *v2 = vertexes.get(to);
+
+  Vector< Edge * > &vE = v1->outgoing_edges;
+  for (size_t i = 0; i < vE.getSize; ++i) {
+    if (vE[i]->to == v2) {
+      Edge *e = vE[i];
+      v1->outgoing_edges.remove(e);
+      v2->incoming_edges.remove(e);
+      edges.remove(e);
+      delete e;
+      return;
+    }
+  }
+  throw std::invalid_argument("no such edge");
+}
+
+template < class T, class S >
+void saldaev::Graph< T, S >::setEdgeData(const std::string &from, const std::string &to, const S &data)
+{
+  if (!(vertexes.has(from)) || !(vertexes.has(to))) {
+    throw std::logic_error("no vertex with this name");
+  }
+
+  Vertex *v1 = vertexes.get(from);
+  Vertex *v2 = vertexes.get(to);
+
+  Vector< Edge * > &vE = v1->outgoing_edges;
+  for (size_t i = 0; i < vE.getSize; ++i) {
+    if (vE[i]->to == v2) {
+      vE[i]->data = data;
+      return;
+    }
+  }
+  throw std::invalid_argument("no such edge");
+}
+
+template < class T, class S >
+S saldaev::Graph< T, S >::getEdgeData(const std::string &from, const std::string &to) const
+{
+  if (!(vertexes.has(from)) || !(vertexes.has(to))) {
+    throw std::logic_error("no vertex with this name");
+  }
+
+  Vertex *v1 = vertexes.get(from);
+  Vertex *v2 = vertexes.get(to);
+
+  Vector< Edge * > &vE = v1->outgoing_edges;
+  for (size_t i = 0; i < vE.getSize; ++i) {
+    if (vE[i]->to == v2) {
+      return vE[i]->data;
+    }
+  }
+  throw std::invalid_argument("no such edge");
+}
+
 #endif
