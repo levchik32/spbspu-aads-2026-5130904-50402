@@ -327,3 +327,56 @@ void handleMerge(std::istream &in, std::ostream &out, GraphStorage &graphs)
 
   graphs.add(gName, graph);
 }
+
+void handleExtract(std::istream &in, std::ostream &out, GraphStorage &graphs)
+{
+  std::string gNameN;
+  in >> gNameN;
+  if (graphs.has(gNameN)) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  std::string gName;
+  in >> gName;
+  if (!(graphs.has(gName))) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  size_t n = 0;
+  if (!(in >> n)) {
+    out << "<INVALID COMMAND>\n";
+    in.clear();
+    return;
+  }
+
+  saldaev::Graph *g = graphs.get(gName);
+  saldaev::Graph *graph = new saldaev::Graph;
+  saldaev::Vector< std::string > v(n);
+  for (size_t i = 0; i < n; ++i) {
+    std::string vName;
+    in >> vName;
+    if (!(g->hasVertex(vName))) {
+      out << "<INVALID COMMAND>\n";
+      delete graph;
+      return;
+    }
+    graph->addVertex(vName);
+    v.pushBack(vName);
+  }
+
+  auto edg = g->getEdges();
+  for (size_t i = 0; i < n; ++i) {
+    for (size_t j = 0; j < n; ++j) {
+      if (g->hasEdge(v[i], v[j])) {
+        saldaev::Vector< size_t > w = edg.get({v[i], v[j]});
+        for (size_t k = 0; k < w.getSize(); ++k) {
+          graph->addEdge(v[i], v[j], w[k]);
+        }
+      }
+    }
+  }
+
+  graphs.add(gName, graph);
+}
