@@ -30,7 +30,7 @@ namespace saldaev
     }
   }
 
-  void handleGraphs(std::istream &in, std::ostream &out, GraphStorage &graphs)
+  void handleGraphs(std::istream &, std::ostream &out, GraphStorage &graphs)
   {
     saldaev::Vector< std::string > g(0);
     auto it = graphs.begin();
@@ -249,7 +249,7 @@ namespace saldaev
       ++it;
     }
     edg = g2->getEdges();
-    auto it = edg.begin();
+    it = edg.begin();
     while (it != edg.end()) {
       saldaev::Vector< size_t > w = it->second;
       for (size_t i = 0; i < w.getSize(); ++i) {
