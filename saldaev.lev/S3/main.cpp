@@ -311,7 +311,7 @@ namespace saldaev
       }
     }
 
-    graphs.add(gName, graph);
+    graphs.add(gNameN, graph);
   }
 }
 
