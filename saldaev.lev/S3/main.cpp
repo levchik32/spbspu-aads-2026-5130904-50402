@@ -321,6 +321,15 @@ int main(int argc, char *argv[])
   using Commands = saldaev::HashTable< std::string, Command, std::hash< std::string >, std::equal_to< std::string > >;
 
   Commands commands(9, std::hash< std::string >(), std::equal_to< std::string >());
+  commands.add("graphs", saldaev::handleGraphs);
+  commands.add("vertexes", saldaev::handleVertexes);
+  commands.add("outbound", saldaev::handleOutbound);
+  commands.add("inbound", saldaev::handleInbound);
+  commands.add("bind", saldaev::handleBind);
+  commands.add("cut", saldaev::handleCut);
+  commands.add("create", saldaev::handleCreate);
+  commands.add("merge", saldaev::handleMerge);
+  commands.add("extract", saldaev::handleExtract);
 
   if (argc != 2) {
     std::cerr << "wrong amoung of arguments";
