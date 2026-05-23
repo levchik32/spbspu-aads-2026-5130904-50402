@@ -1,6 +1,7 @@
 #include "Graph.hpp"
 #include <fstream>
 #include <iostream>
+#include <limits>
 
 using GraphStorage =
     saldaev::HashTable< std::string, saldaev::Graph *, std::hash< std::string >, std::equal_to< std::string > >;
@@ -42,6 +43,10 @@ namespace saldaev
     for (size_t i = 0; i < g.getSize(); ++i) {
       out << g[i] << '\n';
     }
+
+    if (g.getSize() == 0) {
+      out << '\n';
+    }
   }
 
   void handleVertexes(std::istream &in, std::ostream &out, GraphStorage &graphs)
@@ -57,6 +62,10 @@ namespace saldaev
     sort(v);
     for (size_t i = 0; i < v.getSize(); ++i) {
       out << v[i] << '\n';
+    }
+
+    if (v.getSize() == 0) {
+      out << '\n';
     }
   }
 
@@ -86,6 +95,10 @@ namespace saldaev
       }
       out << '\n';
     }
+
+    if (v.getSize() == 0) {
+      out << '\n';
+    }
   }
 
   void handleInbound(std::istream &in, std::ostream &out, GraphStorage &graphs)
@@ -112,6 +125,10 @@ namespace saldaev
       for (size_t j = 0; j < w.getSize(); ++j) {
         out << ' ' << w[j];
       }
+      out << '\n';
+    }
+
+    if (v.getSize() == 0) {
       out << '\n';
     }
   }
@@ -386,6 +403,8 @@ int main(int argc, char *argv[])
     } else {
       std::cout << "<INVALID COMMAND>\n";
     }
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
   }
 
   auto it = graphs.begin();
