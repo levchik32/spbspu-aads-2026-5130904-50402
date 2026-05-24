@@ -320,4 +320,67 @@ S saldaev::Graph< T, S >::getEdgeData(const std::string &from, const std::string
   throw std::invalid_argument("no such edge");
 }
 
+template < class T, class S >
+size_t saldaev::Graph< T, S >::indegree(const std::string &id) const
+{
+  if (!(vertexes.has(id))) {
+    throw std::out_of_range("no vertex with this name");
+  }
+
+  return vertexes.get(id)->incoming_edges.getSize();
+}
+
+template < class T, class S >
+size_t saldaev::Graph< T, S >::outdegree(const std::string &id) const
+{
+  if (!(vertexes.has(id))) {
+    throw std::out_of_range("no vertex with this name");
+  }
+
+  return vertexes.get(id)->outgoing_edges.getSize();
+}
+
+template < class T, class S >
+size_t saldaev::Graph< T, S >::degree(const std::string &id) const
+{
+  if (!(vertexes.has(id))) {
+    throw std::out_of_range("no vertex with this name");
+  }
+
+  size_t n = vertexes.get(id)->incoming_edges.getSize();
+  return n + vertexes.get(id)->outgoing_edges.getSize();
+}
+
+template < class T, class S >
+const saldaev::Vector< std::string > saldaev::Graph< T, S >::outgoingEdges(const std::string &id) const
+{
+  if (!(vertexes.has(id))) {
+    throw std::out_of_range("no vertex with this name");
+  }
+
+  Vertex *v = vertexes.get(id);
+  size_t n = v->outgoing_edges.getSize();
+  Vector< std::string > ret(n);
+  for (size_t i = 0; i < n; ++i) {
+    ret.pushBack(v->outgoing_edges[i]->to->id);
+  }
+  return ret;
+}
+
+template < class T, class S >
+const saldaev::Vector< std::string > saldaev::Graph< T, S >::incomingEdges(const std::string &id) const
+{
+  if (!(vertexes.has(id))) {
+    throw std::out_of_range("no vertex with this name");
+  }
+
+  Vertex *v = vertexes.get(id);
+  size_t n = v->incoming_edges.getSize();
+  Vector< std::string > ret(n);
+  for (size_t i = 0; i < n; ++i) {
+    ret.pushBack(v->incoming_edges[i]->from->id);
+  }
+  return ret;
+}
+
 #endif
