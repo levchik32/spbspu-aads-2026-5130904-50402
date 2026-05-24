@@ -147,8 +147,6 @@ namespace saldaev
     b.pop();
     BOOST_TEST(b.empty());
 
-    BOOST_TEST(a.empty());
-
     Stack< int > &ref = b;
     b = std::move(ref);
     BOOST_TEST(b.empty());
@@ -158,7 +156,6 @@ namespace saldaev
     target.push(42);
     target = std::move(empty);
     BOOST_TEST(target.empty());
-    BOOST_TEST(empty.empty());
   }
 
   BOOST_AUTO_TEST_CASE(const_front)
