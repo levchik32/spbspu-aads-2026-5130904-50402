@@ -8,7 +8,7 @@
 
 namespace saldaev
 {
-  Queue< std::string > parse(std::string rawLine)
+  Queue< std::string > parse(const std::string &rawLine)
   {
     Queue< std::string > tokens;
     size_t start = 0;

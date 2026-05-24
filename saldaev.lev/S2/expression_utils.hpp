@@ -8,7 +8,7 @@
 
 namespace saldaev
 {
-  inline bool isNumber(std::string token)
+  inline bool isNumber(const std::string &token)
   {
     for (size_t i = 0; i < token.size(); ++i) {
       if (!std::isdigit(token[i])) {
@@ -18,7 +18,7 @@ namespace saldaev
     return true;
   }
 
-  inline size_t getOperatorArity(std::string token)
+  inline size_t getOperatorArity(const std::string &token)
   {
     if (token == "+" || token == "-" || token == "*" || token == "/" || token == "%") {
       return 2;
