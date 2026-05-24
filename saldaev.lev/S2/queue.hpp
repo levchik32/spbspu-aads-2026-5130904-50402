@@ -4,7 +4,7 @@
 
 namespace saldaev
 {
-  template < class T >
+  template< class T >
   struct Queue
   {
     Queue();

@@ -1,6 +1,6 @@
-#include "expression_utils.hpp"
-#include <boost/test/unit_test.hpp>
 #include <stdexcept>
+#include <boost/test/unit_test.hpp>
+#include "expression_utils.hpp"
 
 namespace saldaev
 {

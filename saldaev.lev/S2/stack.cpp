@@ -3,24 +3,24 @@
 
 namespace saldaev
 {
-  template < class T >
+  template< class T >
   Stack< T >::Stack():
     data_()
   {}
 
-  template < class T >
+  template< class T >
   bool Stack< T >::empty() const noexcept
   {
     return !(data_.size());
   }
 
-  template < class T >
+  template< class T >
   void Stack< T >::push(const T &value)
   {
     data_.pushFront(value);
   }
 
-  template < class T >
+  template< class T >
   T &Stack< T >::top()
   {
     if (!empty()) {
@@ -30,7 +30,7 @@ namespace saldaev
     throw std::logic_error("Cannot read from empty stack");
   }
 
-  template < class T >
+  template< class T >
   const T &Stack< T >::top() const
   {
     if (!empty()) {
@@ -40,7 +40,7 @@ namespace saldaev
     throw std::logic_error("Cannot read from empty stack");
   }
 
-  template < class T >
+  template< class T >
   void Stack< T >::pop()
   {
     if (empty()) {
@@ -49,13 +49,13 @@ namespace saldaev
     data_.popFront();
   }
 
-  template < class T >
+  template< class T >
   void Stack< T >::clear() noexcept
   {
     data_.clear();
   }
 
-  template < class T >
+  template< class T >
   Stack< T > &Stack< T >::operator=(Stack &&other)
   {
     if (&other != this) {
@@ -65,7 +65,7 @@ namespace saldaev
     return *this;
   }
 
-  template < class T >
+  template< class T >
   size_t Stack< T >::size() const noexcept
   {
     return data_.size();

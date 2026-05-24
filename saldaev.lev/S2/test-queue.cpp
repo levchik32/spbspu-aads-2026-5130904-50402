@@ -1,7 +1,7 @@
 
-#include "queue.hpp"
-#include <boost/test/unit_test.hpp>
 #include <stdexcept>
+#include <boost/test/unit_test.hpp>
+#include "queue.hpp"
 
 namespace saldaev
 {

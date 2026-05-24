@@ -3,24 +3,24 @@
 
 namespace saldaev
 {
-  template < class T >
+  template< class T >
   Queue< T >::Queue():
     data_()
   {}
 
-  template < class T >
+  template< class T >
   bool Queue< T >::empty() const noexcept
   {
     return !(data_.size());
   }
 
-  template < class T >
+  template< class T >
   void Queue< T >::push(const T &value)
   {
     data_.pushBack(value);
   }
 
-  template < class T >
+  template< class T >
   T &Queue< T >::front()
   {
     if (!empty()) {
@@ -30,7 +30,7 @@ namespace saldaev
     throw std::logic_error("Cannot read from empty queue");
   }
 
-  template < class T >
+  template< class T >
   const T &Queue< T >::front() const
   {
     if (!empty()) {
@@ -40,7 +40,7 @@ namespace saldaev
     throw std::logic_error("Cannot read from empty queue");
   }
 
-  template < class T >
+  template< class T >
   void Queue< T >::pop()
   {
     if (empty()) {
@@ -49,13 +49,13 @@ namespace saldaev
     data_.popFront();
   }
 
-  template < class T >
+  template< class T >
   void Queue< T >::clear() noexcept
   {
     data_.clear();
   }
 
-  template < class T >
+  template< class T >
   Queue< T > &Queue< T >::operator=(Queue &&other)
   {
     if (&other != this) {
@@ -65,7 +65,7 @@ namespace saldaev
     return *this;
   }
 
-  template < class T >
+  template< class T >
   size_t Queue< T >::size() const noexcept
   {
     return data_.size();

@@ -1,10 +1,10 @@
 #ifndef EXPRESSION_CONVERTER_HPP
 #define EXPRESSION_CONVERTER_HPP
+#include <stdexcept>
+#include <string>
 #include "expression_utils.hpp"
 #include "queue.hpp"
 #include "stack.hpp"
-#include <stdexcept>
-#include <string>
 
 namespace saldaev
 {
