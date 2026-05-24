@@ -4,11 +4,6 @@
 namespace saldaev
 {
   template< class T >
-  Queue< T >::Queue():
-    data_()
-  {}
-
-  template< class T >
   bool Queue< T >::empty() const noexcept
   {
     return !(data_.size());
@@ -18,6 +13,12 @@ namespace saldaev
   void Queue< T >::push(const T &value)
   {
     data_.pushBack(value);
+  }
+
+  template< class T >
+  void Queue< T >::push(T &&value)
+  {
+    data_.pushBack(std::move(value));
   }
 
   template< class T >
@@ -53,16 +54,6 @@ namespace saldaev
   void Queue< T >::clear() noexcept
   {
     data_.clear();
-  }
-
-  template< class T >
-  Queue< T > &Queue< T >::operator=(Queue &&other)
-  {
-    if (&other != this) {
-      data_.swap(other.data_);
-      other.data_.clear();
-    }
-    return *this;
   }
 
   template< class T >

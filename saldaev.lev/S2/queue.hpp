@@ -7,14 +7,8 @@ namespace saldaev
   template< class T >
   struct Queue
   {
-    Queue();
-    Queue(const Queue &other) = default;
-    Queue(Queue &&other) = default;
-    ~Queue() = default;
-    Queue &operator=(const Queue &other) = default;
-    Queue &operator=(Queue &&other);
-
     void push(const T &value);
+    void push(T &&value);
     T &front();
     const T &front() const;
     void pop();

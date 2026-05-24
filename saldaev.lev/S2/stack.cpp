@@ -4,11 +4,6 @@
 namespace saldaev
 {
   template< class T >
-  Stack< T >::Stack():
-    data_()
-  {}
-
-  template< class T >
   bool Stack< T >::empty() const noexcept
   {
     return !(data_.size());
@@ -53,16 +48,6 @@ namespace saldaev
   void Stack< T >::clear() noexcept
   {
     data_.clear();
-  }
-
-  template< class T >
-  Stack< T > &Stack< T >::operator=(Stack &&other)
-  {
-    if (&other != this) {
-      data_.swap(other.data_);
-      other.data_.clear();
-    }
-    return *this;
   }
 
   template< class T >
