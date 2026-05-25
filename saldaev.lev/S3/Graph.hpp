@@ -1,30 +1,33 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
+#include <string>
+#include <boost/hash2/xxhash.hpp>
 #include "../common/vector.hpp"
 #include "HashTable.hpp"
-#include <boost/hash2/xxhash.hpp>
-#include <string>
 
 namespace saldaev
 {
+  using StringPair = std::pair< std::string, std::string >;
+
   struct Graph
   {
   private:
     struct Hasher
     {
-      size_t operator()(const std::pair< std::string, std::string > &p) const;
+      size_t operator()(const StringPair &p) const;
     };
 
     struct KeyEqual
     {
-      bool operator()(const std::pair< std::string, std::string > &st,
-                      const std::pair< std::string, std::string > &nd) const;
+      bool operator()(const StringPair &st, const StringPair &nd) const;
     };
 
-    HashTable< std::pair< std::string, std::string >, Vector< size_t >, Hasher, KeyEqual > edges;
+    HashTable< StringPair, Vector< size_t >, Hasher, KeyEqual > edges;
     Vector< std::string > vertexes;
 
   public:
+    using EdgeTable = HashTable< StringPair, Vector< size_t >, Hasher, KeyEqual >;
+
     Graph();
 
     Vector< std::string > vertices() const;
@@ -37,7 +40,7 @@ namespace saldaev
 
     const Vector< std::pair< std::string, Vector< size_t > > > outgoingEdges(const std::string &name) const;
     const Vector< std::pair< std::string, Vector< size_t > > > incomingEdges(const std::string &name) const;
-    const HashTable< std::pair< std::string, std::string >, Vector< size_t >, Hasher, KeyEqual > &getEdges() const;
+    const EdgeTable &getEdges() const;
 
     void clearEdges();
     void clear();
@@ -46,7 +49,7 @@ namespace saldaev
 
 namespace
 {
-  template < class T >
+  template< class T >
   saldaev::Vector< T > sort(const saldaev::Vector< T > &orig)
   {
     saldaev::Vector< T > v(orig);
@@ -160,9 +163,7 @@ saldaev::Graph::incomingEdges(const std::string &name) const
   return ret;
 }
 
-const saldaev::HashTable< std::pair< std::string, std::string >, saldaev::Vector< size_t >, saldaev::Graph::Hasher,
-                          saldaev::Graph::KeyEqual > &
-saldaev::Graph::getEdges() const
+const saldaev::Graph::EdgeTable &saldaev::Graph::getEdges() const
 {
   return edges;
 }
@@ -178,7 +179,7 @@ void saldaev::Graph::clear()
   vertexes.erase(0, vertexes.getSize());
 }
 
-size_t saldaev::Graph::Hasher::operator()(const std::pair< std::string, std::string > &p) const
+size_t saldaev::Graph::Hasher::operator()(const StringPair &p) const
 {
   boost::hash2::xxhash_64 hash;
   hash.update(p.first.data(), p.first.size());
@@ -186,8 +187,7 @@ size_t saldaev::Graph::Hasher::operator()(const std::pair< std::string, std::str
   return static_cast< size_t >(hash.result());
 }
 
-bool saldaev::Graph::KeyEqual::operator()(const std::pair< std::string, std::string > &st,
-                                          const std::pair< std::string, std::string > &nd) const
+bool saldaev::Graph::KeyEqual::operator()(const StringPair &st, const StringPair &nd) const
 {
   return (st.first == nd.first) && (st.second == nd.second);
 }

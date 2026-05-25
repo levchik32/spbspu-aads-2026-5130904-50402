@@ -1,18 +1,20 @@
-#include "Graph.hpp"
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include "Graph.hpp"
 
-using GraphStorage =
-    saldaev::HashTable< std::string, saldaev::Graph *, std::hash< std::string >, std::equal_to< std::string > >;
+using GraphHash = std::hash< std::string >;
+using GraphEqual = std::equal_to< std::string >;
+using GraphStorage = saldaev::HashTable< std::string, saldaev::Graph *, GraphHash, GraphEqual >;
 
 namespace saldaev
 {
-  template < class T >
+  template< class T >
   void sort(saldaev::Vector< T > &v)
   {
-    if (v.getSize() < 2)
+    if (v.getSize() < 2) {
       return;
+    }
 
     bool swapped = true;
     while (swapped) {

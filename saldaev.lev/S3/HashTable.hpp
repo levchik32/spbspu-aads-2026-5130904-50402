@@ -1,13 +1,13 @@
 #ifndef HASHTABLE_HPP
 #define HASHTABLE_HPP
-#include "../common/List.hpp"
-#include "../common/vector.hpp"
 #include <cstddef>
 #include <utility>
+#include "../common/List.hpp"
+#include "../common/vector.hpp"
 
 namespace saldaev
 {
-  template < class Key, class Value, class Hash, class Equal >
+  template< class Key, class Value, class Hash, class Equal >
   struct HashTable
   {
   public:
@@ -57,12 +57,8 @@ namespace saldaev
                     typename List< std::pair< Key, Value > >::LCIter it);
     };
 
-    HashTable(const HashTable &other);
-    HashTable(HashTable &&other) noexcept;
     HashTable(size_t slots, Hash hasher, Equal key_eq);
     ~HashTable() = default;
-    HashTable &operator=(const HashTable &other);
-    HashTable &operator=(HashTable &&other) noexcept;
 
     void add(Key k, Value v);
     bool has(Key k) const noexcept;
@@ -92,25 +88,7 @@ namespace saldaev
   };
 }
 
-template < class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable &other):
-  data_(other.data_),
-  hasher_(other.hasher_),
-  key_eq_(other.key_eq_),
-  slots_(other.slots_),
-  elements_(other.elements_)
-{}
-
-template < class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable &&other) noexcept:
-  data_(std::move(other.data_)),
-  hasher_(other.hasher_),
-  key_eq_(other.key_eq_),
-  slots_(other.slots_),
-  elements_(other.elements_)
-{}
-
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots, Hash hasher, Equal key_eq):
   data_(Vector< List< std::pair< Key, Value > > >(slots)),
   hasher_(hasher),
@@ -123,39 +101,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots, Hash hash
   }
 }
 
-template < class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal > &
-saldaev::HashTable< Key, Value, Hash, Equal >::operator=(const HashTable &other)
-{
-  if (this != std::addressof(other)) {
-    Vector< List< std::pair< Key, Value > > > cpy(other.data_);
-    data_.swap(cpy);
-
-    hasher_ = other.hasher_;
-    key_eq_ = other.key_eq_;
-    slots_ = other.slots_;
-    elements_ = other.elements_;
-  }
-
-  return *this;
-}
-
-template < class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal > &
-saldaev::HashTable< Key, Value, Hash, Equal >::operator=(HashTable &&other) noexcept
-{
-  Vector< List< std::pair< Key, Value > > > cpy(std::move(other.data_));
-  data_.swap(cpy);
-
-  hasher_ = other.hasher_;
-  key_eq_ = other.key_eq_;
-  slots_ = other.slots_;
-  elements_ = other.elements_;
-
-  return *this;
-}
-
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
 {
   if (has(k)) {
@@ -166,7 +112,7 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
   ++elements_;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::has(Key k) const noexcept
 {
   auto it = data_[hasher_(k) % slots_].begin();
@@ -179,7 +125,7 @@ bool saldaev::HashTable< Key, Value, Hash, Equal >::has(Key k) const noexcept
   return false;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 Value saldaev::HashTable< Key, Value, Hash, Equal >::get(Key k) const
 {
   auto it = data_[hasher_(k) % slots_].begin();
@@ -192,7 +138,7 @@ Value saldaev::HashTable< Key, Value, Hash, Equal >::get(Key k) const
   throw std::invalid_argument("Key does not exist");
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 Value &saldaev::HashTable< Key, Value, Hash, Equal >::at(Key k)
 {
   auto it = data_[hasher_(k) % slots_].begin();
@@ -205,7 +151,7 @@ Value &saldaev::HashTable< Key, Value, Hash, Equal >::at(Key k)
   throw std::invalid_argument("Key does not exist");
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::remove(Key k)
 {
   size_t idx = hasher_(k) % slots_;
@@ -221,7 +167,7 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::remove(Key k)
   throw std::invalid_argument("Key does not exist");
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::rewrite(Key k, Value v)
 {
   size_t idx = hasher_(k) % slots_;
@@ -236,7 +182,7 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::rewrite(Key k, Value v)
   throw std::invalid_argument("Key does not exist");
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
 {
   Vector< List< std::pair< Key, Value > > > newData(slots);
@@ -254,7 +200,7 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
   slots_ = slots;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::clear() noexcept
 {
   auto it = data_.begin();
@@ -265,25 +211,25 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::clear() noexcept
   elements_ = 0;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 size_t saldaev::HashTable< Key, Value, Hash, Equal >::size() const noexcept
 {
   return elements_;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 size_t saldaev::HashTable< Key, Value, Hash, Equal >::bucket_count() const noexcept
 {
   return slots_;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::empty() const noexcept
 {
   return !elements_;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 void saldaev::HashTable< Key, Value, Hash, Equal >::swap(HashTable &other) noexcept
 {
   data_.swap(other.data_);
@@ -293,7 +239,7 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::swap(HashTable &other) noexc
   std::swap(elements_, other.elements_);
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::begin()
 {
   if (slots_ == 0) {
@@ -312,13 +258,13 @@ typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTa
   return Iterator(&data_, idx, it);
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::end()
 {
   return Iterator(&data_, slots_, typename List< std::pair< Key, Value > >::LIter());
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
 saldaev::HashTable< Key, Value, Hash, Equal >::begin() const
 {
@@ -338,14 +284,14 @@ saldaev::HashTable< Key, Value, Hash, Equal >::begin() const
   return ConstIterator(&data_, idx, it);
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
 saldaev::HashTable< Key, Value, Hash, Equal >::end() const
 {
   return ConstIterator(&data_, slots_, typename List< std::pair< Key, Value > >::LCIter());
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::Iterator(Vector< List< std::pair< Key, Value > > > *b,
                                                                   size_t idx,
                                                                   typename List< std::pair< Key, Value > >::LIter it):
@@ -354,19 +300,19 @@ saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::Iterator(Vector< List< 
   list_iter_(it)
 {}
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 std::pair< Key, Value > &saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator*()
 {
   return *list_iter_;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 std::pair< Key, Value > *saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator->()
 {
   return &(*list_iter_);
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator &
 saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++()
 {
@@ -382,7 +328,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++()
   return *this;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator
 saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++(int)
 {
@@ -399,19 +345,19 @@ saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++(int)
   return ret;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator==(const Iterator &other) const
 {
   return (buckets_ == other.buckets_) && (bucket_idx_ == other.bucket_idx_) && (list_iter_ == other.list_iter_);
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator!=(const Iterator &other) const
 {
   return !(*this == other);
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::ConstIterator(
     const Vector< List< std::pair< Key, Value > > > *b, size_t idx,
     typename List< std::pair< Key, Value > >::LCIter it):
@@ -420,19 +366,19 @@ saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::ConstIterator(
   list_iter_(it)
 {}
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 const std::pair< Key, Value > &saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator*() const
 {
   return *list_iter_;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 const std::pair< Key, Value > *saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator->() const
 {
   return &(*list_iter_);
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator &
 saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++()
 {
@@ -448,7 +394,7 @@ saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++()
   return *this;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
 saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++(int)
 {
@@ -465,13 +411,13 @@ saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++(int)
   return ret;
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator==(const ConstIterator &other) const
 {
   return (buckets_ == other.buckets_) && (bucket_idx_ == other.bucket_idx_) && (list_iter_ == other.list_iter_);
 }
 
-template < class Key, class Value, class Hash, class Equal >
+template< class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator!=(const ConstIterator &other) const
 {
   return !(*this == other);
