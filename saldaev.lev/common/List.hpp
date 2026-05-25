@@ -16,6 +16,8 @@ namespace saldaev
     {
       friend class List;
 
+      LCIter();
+
       LCIter &operator++() noexcept;
       LCIter operator++(int) noexcept;
       LCIter &operator--() noexcept;
@@ -35,6 +37,8 @@ namespace saldaev
     struct LIter
     {
       friend class List;
+
+      LIter();
 
       LIter &operator++() noexcept;
       LIter operator++(int) noexcept;
@@ -284,6 +288,11 @@ typename saldaev::List< T >::LIter saldaev::List< T >::end()
 }
 
 template < class T >
+saldaev::List< T >::LCIter::LCIter():
+  curr_(nullptr)
+{}
+
+template < class T >
 typename saldaev::List< T >::LCIter saldaev::List< T >::begin() const
 {
   return LCIter(head_->next_);
@@ -363,6 +372,11 @@ const T *saldaev::List< T >::LCIter::operator->() const
 {
   return &(curr_->data_);
 }
+
+template < class T >
+saldaev::List< T >::LIter::LIter():
+  curr_(nullptr)
+{}
 
 template < class T >
 saldaev::List< T >::LIter::LIter(typename List::Node *node):
