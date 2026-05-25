@@ -386,7 +386,7 @@ const saldaev::Vector< std::string > saldaev::Graph< T, S >::incomingEdges(const
 template< class T, class S >
 size_t saldaev::Graph< T, S >::countVertexes() const
 {
-  return vertexes.size()
+  return vertexes.size();
 }
 
 template< class T, class S >
