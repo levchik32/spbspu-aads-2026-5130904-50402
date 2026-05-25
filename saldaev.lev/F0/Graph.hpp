@@ -5,7 +5,7 @@
 
 namespace saldaev
 {
-  template < class T, class S >
+  template< class T, class S >
   struct Graph
   {
   private:
@@ -81,7 +81,7 @@ namespace saldaev
   };
 }
 
-template < class T, class S >
+template< class T, class S >
 saldaev::Graph< T, S >::Vertex::Vertex(std::string i, T d):
   id(i),
   data(d),
@@ -89,20 +89,20 @@ saldaev::Graph< T, S >::Vertex::Vertex(std::string i, T d):
   incoming_edges(0)
 {}
 
-template < class T, class S >
+template< class T, class S >
 saldaev::Graph< T, S >::Edge::Edge(S d, Vertex *f, Vertex *t):
   data(d),
   from(f),
   to(t)
 {}
 
-template < class T, class S >
+template< class T, class S >
 saldaev::Graph< T, S >::Graph():
   vertexes(31, Hasher(), KeyEqual()),
   edges(0)
 {}
 
-template < class T, class S >
+template< class T, class S >
 saldaev::Graph< T, S >::~Graph()
 {
   for (size_t i = 0; i < edges.getSize(); ++i) {
@@ -116,7 +116,7 @@ saldaev::Graph< T, S >::~Graph()
   }
 }
 
-template < class T, class S >
+template< class T, class S >
 void saldaev::Graph< T, S >::removeEdgesOf(Vertex *v)
 {
   for (size_t i = 0; i < v->incoming_edges.getSize(); ++i) {
@@ -136,7 +136,7 @@ void saldaev::Graph< T, S >::removeEdgesOf(Vertex *v)
   v->outgoing_edges.clear();
 }
 
-template < class T, class S >
+template< class T, class S >
 saldaev::Vector< std::string > saldaev::Graph< T, S >::vertexIds() const
 {
   Vector< std::string > ret(0);
@@ -148,13 +148,13 @@ saldaev::Vector< std::string > saldaev::Graph< T, S >::vertexIds() const
   return ret;
 }
 
-template < class T, class S >
+template< class T, class S >
 bool saldaev::Graph< T, S >::hasVertex(const std::string &id) const
 {
   return vertexes.has(id);
 }
 
-template < class T, class S >
+template< class T, class S >
 void saldaev::Graph< T, S >::addVertex(const T &data, const std::string &id)
 {
   if (vertexes.has(id)) {
@@ -165,7 +165,7 @@ void saldaev::Graph< T, S >::addVertex(const T &data, const std::string &id)
   vertexes.add(id, nV);
 }
 
-template < class T, class S >
+template< class T, class S >
 void saldaev::Graph< T, S >::removeVertex(const std::string &id)
 {
   if (!(vertexes.has(id))) {
@@ -179,7 +179,7 @@ void saldaev::Graph< T, S >::removeVertex(const std::string &id)
   vertexes.remove(id);
 }
 
-template < class T, class S >
+template< class T, class S >
 void saldaev::Graph< T, S >::setVertexData(const std::string &id, const T &data)
 {
   if (!(vertexes.has(id))) {
@@ -188,13 +188,13 @@ void saldaev::Graph< T, S >::setVertexData(const std::string &id, const T &data)
   vertexes.get(id)->data = data;
 }
 
-template < class T, class S >
+template< class T, class S >
 T saldaev::Graph< T, S >::getVertexData(const std::string &id) const
 {
   return vertexes.get(id)->data;
 }
 
-template < class T, class S >
+template< class T, class S >
 saldaev::Vector< std::pair< std::string, std::string > > saldaev::Graph< T, S >::edgesIds() const
 {
   Vector< std::pair< std::string, std::string > > ret(0);
@@ -204,7 +204,7 @@ saldaev::Vector< std::pair< std::string, std::string > > saldaev::Graph< T, S >:
   return ret;
 }
 
-template < class T, class S >
+template< class T, class S >
 bool saldaev::Graph< T, S >::hasEdge(const std::string &from, const std::string &to) const
 {
   if (!(vertexes.has(from)) || !(vertexes.has(to))) {
@@ -223,7 +223,7 @@ bool saldaev::Graph< T, S >::hasEdge(const std::string &from, const std::string 
   return false;
 }
 
-template < class T, class S >
+template< class T, class S >
 void saldaev::Graph< T, S >::addEdge(const std::string &from, const std::string &to, const S &data)
 {
   if (hasEdge(from, to)) {
@@ -257,7 +257,7 @@ void saldaev::Graph< T, S >::addEdge(const std::string &from, const std::string 
   }
 }
 
-template < class T, class S >
+template< class T, class S >
 void saldaev::Graph< T, S >::removeEdge(const std::string &from, const std::string &to)
 {
   if (!(vertexes.has(from)) || !(vertexes.has(to))) {
@@ -281,7 +281,7 @@ void saldaev::Graph< T, S >::removeEdge(const std::string &from, const std::stri
   throw std::invalid_argument("no such edge");
 }
 
-template < class T, class S >
+template< class T, class S >
 void saldaev::Graph< T, S >::setEdgeData(const std::string &from, const std::string &to, const S &data)
 {
   if (!(vertexes.has(from)) || !(vertexes.has(to))) {
@@ -301,7 +301,7 @@ void saldaev::Graph< T, S >::setEdgeData(const std::string &from, const std::str
   throw std::invalid_argument("no such edge");
 }
 
-template < class T, class S >
+template< class T, class S >
 S saldaev::Graph< T, S >::getEdgeData(const std::string &from, const std::string &to) const
 {
   if (!(vertexes.has(from)) || !(vertexes.has(to))) {
@@ -320,7 +320,7 @@ S saldaev::Graph< T, S >::getEdgeData(const std::string &from, const std::string
   throw std::invalid_argument("no such edge");
 }
 
-template < class T, class S >
+template< class T, class S >
 size_t saldaev::Graph< T, S >::indegree(const std::string &id) const
 {
   if (!(vertexes.has(id))) {
@@ -330,7 +330,7 @@ size_t saldaev::Graph< T, S >::indegree(const std::string &id) const
   return vertexes.get(id)->incoming_edges.getSize();
 }
 
-template < class T, class S >
+template< class T, class S >
 size_t saldaev::Graph< T, S >::outdegree(const std::string &id) const
 {
   if (!(vertexes.has(id))) {
@@ -340,7 +340,7 @@ size_t saldaev::Graph< T, S >::outdegree(const std::string &id) const
   return vertexes.get(id)->outgoing_edges.getSize();
 }
 
-template < class T, class S >
+template< class T, class S >
 size_t saldaev::Graph< T, S >::degree(const std::string &id) const
 {
   if (!(vertexes.has(id))) {
@@ -351,7 +351,7 @@ size_t saldaev::Graph< T, S >::degree(const std::string &id) const
   return n + vertexes.get(id)->outgoing_edges.getSize();
 }
 
-template < class T, class S >
+template< class T, class S >
 const saldaev::Vector< std::string > saldaev::Graph< T, S >::outgoingEdges(const std::string &id) const
 {
   if (!(vertexes.has(id))) {
@@ -367,7 +367,7 @@ const saldaev::Vector< std::string > saldaev::Graph< T, S >::outgoingEdges(const
   return ret;
 }
 
-template < class T, class S >
+template< class T, class S >
 const saldaev::Vector< std::string > saldaev::Graph< T, S >::incomingEdges(const std::string &id) const
 {
   if (!(vertexes.has(id))) {
@@ -381,6 +381,43 @@ const saldaev::Vector< std::string > saldaev::Graph< T, S >::incomingEdges(const
     ret.pushBack(v->incoming_edges[i]->from->id);
   }
   return ret;
+}
+
+template< class T, class S >
+size_t saldaev::Graph< T, S >::countVertexes() const
+{
+  return vertexes.size()
+}
+
+template< class T, class S >
+size_t saldaev::Graph< T, S >::countEdges() const
+{
+  return edges.getSize();
+}
+
+template< class T, class S >
+void saldaev::Graph< T, S >::clearEdges()
+{
+  while (edges.getSize()) {
+    Edge *e = edges[0];
+    e->from->outgoing_edges.remove(e);
+    e->to->incoming_edges.remove(e);
+    edges.remove(e);
+    delete e;
+  }
+}
+
+template< class T, class S >
+void saldaev::Graph< T, S >::clear()
+{
+  clearEdges();
+
+  auto it = vertexes.begin();
+  while (it != vertexes.end()) {
+    delete it->second;
+    ++it;
+  }
+  vertexes.clear();
 }
 
 #endif
