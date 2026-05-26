@@ -268,7 +268,7 @@ void saldaev::Graph< T, S >::removeEdge(const std::string &from, const std::stri
   Vertex *v2 = vertexes.get(to);
 
   Vector< Edge * > &vE = v1->outgoing_edges;
-  for (size_t i = 0; i < vE.getSize; ++i) {
+  for (size_t i = 0; i < vE.getSize(); ++i) {
     if (vE[i]->to == v2) {
       Edge *e = vE[i];
       v1->outgoing_edges.remove(e);
@@ -292,7 +292,7 @@ void saldaev::Graph< T, S >::setEdgeData(const std::string &from, const std::str
   Vertex *v2 = vertexes.get(to);
 
   Vector< Edge * > &vE = v1->outgoing_edges;
-  for (size_t i = 0; i < vE.getSize; ++i) {
+  for (size_t i = 0; i < vE.getSize(); ++i) {
     if (vE[i]->to == v2) {
       vE[i]->data = data;
       return;
@@ -312,7 +312,7 @@ S saldaev::Graph< T, S >::getEdgeData(const std::string &from, const std::string
   Vertex *v2 = vertexes.get(to);
 
   Vector< Edge * > &vE = v1->outgoing_edges;
-  for (size_t i = 0; i < vE.getSize; ++i) {
+  for (size_t i = 0; i < vE.getSize(); ++i) {
     if (vE[i]->to == v2) {
       return vE[i]->data;
     }
@@ -418,6 +418,18 @@ void saldaev::Graph< T, S >::clear()
     ++it;
   }
   vertexes.clear();
+}
+
+template< class T, class S >
+size_t saldaev::Graph< T, S >::Hasher::operator()(const std::string &p) const
+{
+  return std::hash< std::string >{}(p);
+}
+
+template< class T, class S >
+bool saldaev::Graph< T, S >::KeyEqual::operator()(const std::string &st, const std::string &nd) const
+{
+  return st == nd;
 }
 
 #endif
