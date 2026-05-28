@@ -8,6 +8,7 @@ int main()
   using Commands = saldaev::HashTable< std::string, Command, std::hash< std::string >, std::equal_to< std::string > >;
 
   Commands commands(10, std::hash< std::string >(), std::equal_to< std::string >());
+  commands.add("help", saldaev::handleHelp);
 
   saldaev::Recipes recipes;
   saldaev::Baskets baskets(5, std::hash< std::string >{}, std::equal_to< std::string >{});
