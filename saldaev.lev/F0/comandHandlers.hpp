@@ -5,6 +5,8 @@
 
 namespace saldaev
 {
+  const size_t BASKET_CAP = 11;
+
   using Recipes = saldaev::Graph< std::pair< std::string, size_t >, size_t >;
   using Basket = saldaev::HashTable< std::string, size_t, std::hash< std::string >, std::equal_to< std::string > >;
   using Baskets = saldaev::HashTable< std::string, Basket *, std::hash< std::string >, std::equal_to< std::string > >;
@@ -51,6 +53,124 @@ namespace saldaev
       }
     }
     out << "no such command\n";
+  }
+
+  void handleBasket_list(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  {
+    auto it = baskets.begin();
+    if (it == baskets.end()) {
+      out << "no available baskets\n";
+      return;
+    }
+    while (it != baskets.end()) {
+      out << it->first << '\n';
+      ++it;
+    }
+  }
+
+  void handleBasket_create(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  {
+    std::string name;
+    in >> name;
+    if (in.eof()) {
+      return;
+    }
+
+    if (baskets.has(name)) {
+      out << "name is not unique\n";
+      return;
+    }
+
+    Basket *b = new Basket(BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{});
+    try {
+      baskets.add(name, b);
+    } catch (...) {
+      delete b;
+      out << "failed\n";
+      return;
+    }
+  }
+
+  void handleBasket_delete(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  {
+    std::string name;
+    in >> name;
+    if (in.eof()) {
+      return;
+    }
+
+    if (!(baskets.has(name))) {
+      out << "no such basket\n";
+      return;
+    }
+
+    delete baskets.get(name);
+    baskets.remove(name);
+  }
+
+  void handleBasket_copy(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  {
+    std::string name, name2;
+    in >> name >> name2;
+    if (in.eof()) {
+      return;
+    }
+
+    if (!(baskets.has(name))) {
+      out << "no such basket\n";
+      return;
+    }
+    if (baskets.has(name2)) {
+      out << "new name is not unique\n";
+      return;
+    }
+
+    Basket *b = new Basket(*(baskets.get(name)));
+    try {
+      baskets.add(name2, b);
+    } catch (...) {
+      delete b;
+      out << "failed\n";
+      return;
+    }
+  }
+
+  void handleMerge(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  {
+    std::string name1, name2, new_name;
+    in >> name1 >> name2 >> new_name;
+    if (in.eof()) {
+      return;
+    }
+
+    if (!(baskets.has(name1)) || !(baskets.has(name2))) {
+      out << "at least one of the baskets doesn't exist\n";
+      return;
+    }
+    if (baskets.has(new_name)) {
+      out << "new name is not unique\n";
+      return;
+    }
+
+    Basket *b = new Basket(*(baskets.get(name1)));
+    Basket *b2 = baskets.get(name2);
+    auto it = b2->begin();
+    try {
+      while (it != b2->end()) {
+        if (b->has(it->first)) {
+          b->at(it->first) += it->second;
+        } else {
+          b->add(it->first, it->second);
+        }
+        ++it;
+      }
+
+      baskets.add(new_name, b);
+    } catch (...) {
+      delete b;
+      out << "failed\n";
+      return;
+    }
   }
 }
 
