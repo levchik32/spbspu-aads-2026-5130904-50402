@@ -39,6 +39,10 @@ namespace saldaev
   {
     std::string com;
     in >> com;
+    if (in.eof()) {
+      return;
+    }
+
     size_t size = sizeof(HELP_DATA) / sizeof(HELP_DATA[0]);
     for (size_t i = 0; i < size; ++i) {
       if (HELP_DATA[i].first == com) {
