@@ -14,6 +14,9 @@ int main()
   commands.add("basket_delete", saldaev::handleBasket_delete);
   commands.add("basket_copy", saldaev::handleBasket_copy);
   commands.add("merge", saldaev::handleMerge);
+  commands.add("prod_add", saldaev::handleProd_add);
+  commands.add("prod_remove", saldaev::handleProd_remove);
+  commands.add("prod_list", saldaev::handleProd_list);
 
   saldaev::Recipes recipes;
   saldaev::Baskets baskets(5, std::hash< std::string >{}, std::equal_to< std::string >{});

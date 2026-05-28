@@ -172,6 +172,73 @@ namespace saldaev
       return;
     }
   }
+
+  void handleProd_add(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  {
+    std::string name;
+    in >> name;
+    if (in.eof()) {
+      return;
+    }
+
+    if (recipes.hasVertex(name)) {
+      out << " - name is not unique\n";
+      return;
+    }
+
+    recipes.addVertex({name, 0}, name);
+  }
+
+  void handleProd_remove(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  {
+    std::string name;
+    in >> name;
+    if (in.eof()) {
+      return;
+    }
+
+    if (!(recipes.hasVertex(name))) {
+      out << " - no such ingredient/dish\n";
+      return;
+    }
+    if (recipes.outdegree(name)) {
+      out << " - cannot remove this product: it is used as an ingredient\n";
+      return;
+    }
+
+    recipes.removeVertex(name);
+  }
+
+  void handleProd_list(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  {
+    std::string opt;
+    in >> opt;
+    if (in.eof()) {
+      return;
+    }
+
+    bool base = false;
+    bool derived = false;
+    if (opt == "base") {
+      base = true;
+    } else if (opt == "derived") {
+      derived = true;
+    } else if (opt == "all") {
+      base = true;
+      derived = true;
+    } else {
+      out << " - wrong argument\n";
+      return;
+    }
+
+    Vector< std::string > products = recipes.vertexIds();
+    for (size_t i = 0; i < products.getSize(); ++i) {
+      std::string product = products[i];
+      if ((base && !(recipes.outdegree(product))) || (derived && recipes.outdegree(product))) {
+        out << " - " << product << '\n';
+      }
+    }
+  }
 }
 
 #endif
