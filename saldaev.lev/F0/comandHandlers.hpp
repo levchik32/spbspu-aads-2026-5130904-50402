@@ -1,15 +1,16 @@
 #ifndef COMANDHANDLERS_HPP
 #define COMANDHANDLERS_HPP
 #include <iostream>
+#include <limits>
 #include "Graph.hpp"
 
 namespace saldaev
 {
   const size_t BASKET_CAP = 11;
 
-  using Recipes = saldaev::Graph< std::pair< std::string, size_t >, size_t >;
-  using Basket = saldaev::HashTable< std::string, size_t, std::hash< std::string >, std::equal_to< std::string > >;
-  using Baskets = saldaev::HashTable< std::string, Basket *, std::hash< std::string >, std::equal_to< std::string > >;
+  using Recipes = Graph< std::pair< std::string, size_t >, size_t >;
+  using Basket = HashTable< std::string, size_t, std::hash< std::string >, std::equal_to< std::string > >;
+  using Baskets = HashTable< std::string, Basket *, std::hash< std::string >, std::equal_to< std::string > >;
 
   const std::pair< std::string, std::string > HELP_DATA[] = {
       {"help", "help <команда> - выводит описание указанной команды."},
@@ -239,6 +240,77 @@ namespace saldaev
       }
     }
   }
+
+  void handleRecipe_add(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  {
+    std::string dish;
+    size_t d_qty = 0;
+    size_t i_qty = 0;
+    in >> dish >> d_qty >> i_qty;
+    if (in.eof()) {
+      return;
+    }
+    if (in.fail() || d_qty == 0 || i_qty == 0) {
+      out << "invalid quantity (must be natural number)\n";
+      in.clear();
+      in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      return;
+    }
+    if (recipes.hasVertex(dish)) {
+      out << "this dish already have a recipe\n";
+      in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      return;
+    }
+
+    Vector< std::pair< std::string, size_t > > ingredients(i_qty);
+    for (size_t i = 0; i < i_qty; ++i) {
+      std::string ingredient = "";
+      size_t qty = 0;
+      in >> ingredient >> qty;
+      if (in.eof()) {
+        return;
+      }
+      if (in.fail() || qty == 0) {
+        out << "invalid ingredient quantity (must be natural number)\n";
+        in.clear();
+        in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+        return;
+      }
+      if (!(recipes.hasVertex(ingredient))) {
+        out << "at least one of ingredients doesn't exist\n";
+        in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+        return;
+      }
+      for (size_t k = 0; k < i; ++k) {
+        if (ingredient == ingredients[k].first) {
+          out << "at least one of ingredients mentioned more then one time\n";
+          in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+          return;
+        }
+      }
+      ingredients.pushBack({ingredient, qty});
+    }
+
+    try {
+      recipes.addVertex({dish, d_qty}, dish);
+    } catch (...) {
+    }
+
+    size_t i = 0;
+    try {
+      for (; i < i_qty; ++i) {
+        recipes.addEdge(ingredients[i].first, dish, ingredients[i].second);
+      }
+    } catch (...) {
+      for (size_t j = 0; j < i; ++j) {
+        recipes.removeEdge(ingredients[j].first, dish);
+      }
+      recipes.removeVertex(dish);
+      out << "failed\n";
+      return;
+    }
+  }
+
 }
 
 #endif
