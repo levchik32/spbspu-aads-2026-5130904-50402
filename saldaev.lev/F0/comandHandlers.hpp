@@ -235,7 +235,7 @@ namespace saldaev
     Vector< std::string > products = recipes.vertexIds();
     for (size_t i = 0; i < products.getSize(); ++i) {
       std::string product = products[i];
-      if ((base && !(recipes.outdegree(product))) || (derived && recipes.outdegree(product))) {
+      if ((base && !(recipes.indegree(product))) || (derived && recipes.indegree(product))) {
         out << " - " << product << '\n';
       }
     }
