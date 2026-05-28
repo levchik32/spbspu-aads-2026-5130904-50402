@@ -9,6 +9,11 @@ int main()
 
   Commands commands(10, std::hash< std::string >(), std::equal_to< std::string >());
   commands.add("help", saldaev::handleHelp);
+  commands.add("basket_list", saldaev::handleBasket_list);
+  commands.add("basket_create", saldaev::handleBasket_create);
+  commands.add("basket_delete", saldaev::handleBasket_delete);
+  commands.add("basket_copy", saldaev::handleBasket_copy);
+  commands.add("merge", saldaev::handleMerge);
 
   saldaev::Recipes recipes;
   saldaev::Baskets baskets(5, std::hash< std::string >{}, std::equal_to< std::string >{});
@@ -18,7 +23,7 @@ int main()
     if (commands.has(cmd)) {
       commands.get(cmd)(std::cin, std::cout, baskets, recipes);
     } else {
-      std::cout << "<INVALID COMMAND>\n";
+      std::cout << " - no such command\n";
     }
   }
 

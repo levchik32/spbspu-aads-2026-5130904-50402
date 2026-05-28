@@ -48,22 +48,22 @@ namespace saldaev
     size_t size = sizeof(HELP_DATA) / sizeof(HELP_DATA[0]);
     for (size_t i = 0; i < size; ++i) {
       if (HELP_DATA[i].first == com) {
-        out << HELP_DATA[i].second << '\n';
+        out << " - " << HELP_DATA[i].second << '\n';
         return;
       }
     }
-    out << "no such command\n";
+    out << " - no such command\n";
   }
 
-  void handleBasket_list(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  void handleBasket_list(std::istream &, std::ostream &out, Baskets &baskets, Recipes &)
   {
     auto it = baskets.begin();
     if (it == baskets.end()) {
-      out << "no available baskets\n";
+      out << " - no available baskets\n";
       return;
     }
     while (it != baskets.end()) {
-      out << it->first << '\n';
+      out << " - " << it->first << '\n';
       ++it;
     }
   }
@@ -77,7 +77,7 @@ namespace saldaev
     }
 
     if (baskets.has(name)) {
-      out << "name is not unique\n";
+      out << " - name is not unique\n";
       return;
     }
 
@@ -86,7 +86,7 @@ namespace saldaev
       baskets.add(name, b);
     } catch (...) {
       delete b;
-      out << "failed\n";
+      out << " - failed\n";
       return;
     }
   }
@@ -100,7 +100,7 @@ namespace saldaev
     }
 
     if (!(baskets.has(name))) {
-      out << "no such basket\n";
+      out << " - no such basket\n";
       return;
     }
 
@@ -117,11 +117,11 @@ namespace saldaev
     }
 
     if (!(baskets.has(name))) {
-      out << "no such basket\n";
+      out << " - no such basket\n";
       return;
     }
     if (baskets.has(name2)) {
-      out << "new name is not unique\n";
+      out << " - new name is not unique\n";
       return;
     }
 
@@ -130,7 +130,7 @@ namespace saldaev
       baskets.add(name2, b);
     } catch (...) {
       delete b;
-      out << "failed\n";
+      out << " - failed\n";
       return;
     }
   }
@@ -144,11 +144,11 @@ namespace saldaev
     }
 
     if (!(baskets.has(name1)) || !(baskets.has(name2))) {
-      out << "at least one of the baskets doesn't exist\n";
+      out << " - at least one of the baskets doesn't exist\n";
       return;
     }
     if (baskets.has(new_name)) {
-      out << "new name is not unique\n";
+      out << " - new name is not unique\n";
       return;
     }
 
@@ -168,7 +168,7 @@ namespace saldaev
       baskets.add(new_name, b);
     } catch (...) {
       delete b;
-      out << "failed\n";
+      out << " - failed\n";
       return;
     }
   }
