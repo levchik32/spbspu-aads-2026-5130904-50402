@@ -311,6 +311,26 @@ namespace saldaev
     }
   }
 
+  void handleRecipe_remove(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  {
+    std::string dish;
+    in >> dish;
+    if (in.eof()) {
+      return;
+    }
+
+    if (recipes.hasVertex(dish)) {
+      if (recipes.outdegree(dish)) {
+        out << " - cannot remove this recipe: this dish is used as an ingredient\n";
+        return;
+      }
+      recipes.removeVertex(dish);
+      return;
+    }
+    out << " - no such dish\n";
+    return;
+  }
+
 }
 
 #endif
