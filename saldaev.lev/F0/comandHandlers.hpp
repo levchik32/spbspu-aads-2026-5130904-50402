@@ -251,13 +251,13 @@ namespace saldaev
       return;
     }
     if (in.fail() || d_qty == 0 || i_qty == 0) {
-      out << "invalid quantity (must be natural number)\n";
+      out << " - invalid quantity (must be natural number)\n";
       in.clear();
       in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
       return;
     }
     if (recipes.hasVertex(dish)) {
-      out << "this dish already have a recipe\n";
+      out << " - this dish already have a recipe\n";
       in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
       return;
     }
@@ -271,19 +271,19 @@ namespace saldaev
         return;
       }
       if (in.fail() || qty == 0) {
-        out << "invalid ingredient quantity (must be natural number)\n";
+        out << " - invalid ingredient quantity (must be natural number)\n";
         in.clear();
         in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
         return;
       }
       if (!(recipes.hasVertex(ingredient))) {
-        out << "at least one of ingredients doesn't exist\n";
+        out << " - at least one of ingredients doesn't exist\n";
         in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
         return;
       }
       for (size_t k = 0; k < i; ++k) {
         if (ingredient == ingredients[k].first) {
-          out << "at least one of ingredients mentioned more then one time\n";
+          out << " - at least one of ingredients mentioned more then one time\n";
           in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
           return;
         }
@@ -306,7 +306,7 @@ namespace saldaev
         recipes.removeEdge(ingredients[j].first, dish);
       }
       recipes.removeVertex(dish);
-      out << "failed\n";
+      out << " - failed\n";
       return;
     }
   }
@@ -365,7 +365,7 @@ namespace saldaev
       return;
     }
     if (in.fail()) {
-      out << "invalid quantity\n";
+      out << " - invalid quantity\n";
       in.clear();
       in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
       return;
@@ -401,7 +401,7 @@ namespace saldaev
       return;
     }
     if (in.fail()) {
-      out << "invalid quantity\n";
+      out << " - invalid quantity\n";
       in.clear();
       in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
       return;
@@ -441,7 +441,7 @@ namespace saldaev
       return;
     }
     if (in.fail()) {
-      out << "invalid quantity\n";
+      out << " - invalid quantity\n";
       in.clear();
       in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
       return;
@@ -468,15 +468,14 @@ namespace saldaev
     for (size_t i = 0; i < ingredients.getSize(); ++i) {
       std::string ingredient = ingredients[i];
       if (!(basket->has(ingredient))) {
-        out << "basket doesn't contain required ingredient - " << ingredient << '\n';
-        return;
+        pCycles == 0;
+        break;
       }
       size_t n = basket->get(ingredient) / recipes.getEdgeData(ingredient, dish);
       pCycles = (n < pCycles) ? n : pCycles;
 
       if (pCycles == 0) {
-        out << " - have not enough igredients even for one dish";
-        return;
+        break;
       }
     }
 
