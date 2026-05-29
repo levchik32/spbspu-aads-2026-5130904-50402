@@ -19,6 +19,10 @@ int main()
   commands.add("prod_list", saldaev::handleProd_list);
   commands.add("recipe_add", saldaev::handleRecipe_add);
   commands.add("recipe_remove", saldaev::handleRecipe_remove);
+  commands.add("show", saldaev::handleShow);
+  commands.add("add", saldaev::handleAdd);
+  commands.add("remove", saldaev::handleRemove);
+  commands.add("cook", saldaev::handleCook);
 
   saldaev::Recipes recipes;
   saldaev::Baskets baskets(5, std::hash< std::string >{}, std::equal_to< std::string >{});

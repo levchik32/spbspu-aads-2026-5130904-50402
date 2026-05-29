@@ -331,6 +331,173 @@ namespace saldaev
     return;
   }
 
+  void handleShow(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  {
+    std::string name;
+    in >> name;
+    if (in.eof()) {
+      return;
+    }
+
+    if (!(baskets.has(name))) {
+      out << " - no such basket\n";
+      return;
+    }
+
+    Basket *bskt = baskets.get(name);
+    auto it = bskt->begin();
+    if (it == bskt->end()) {
+      out << " - this one is empty\n";
+      return;
+    }
+    while (it != bskt->end()) {
+      out << " - " << it->first << ": " << it->second << '\n';
+      ++it;
+    }
+  }
+
+  void handleAdd(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
+  {
+    std::string b_name, item;
+    size_t qty = 0;
+    in >> b_name >> item >> qty;
+    if (in.eof()) {
+      return;
+    }
+    if (in.fail()) {
+      out << "invalid quantity\n";
+      in.clear();
+      in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      return;
+    }
+
+    if (!(baskets.has(b_name))) {
+      out << " - no such basket\n";
+      return;
+    }
+    if (!(recipes.hasVertex(item))) {
+      out << " - no such ingredient/dish\n";
+      return;
+    }
+    if (qty == 0) {
+      out << " - quantity must be natural number\n";
+      return;
+    }
+
+    Basket *basket = baskets.get(b_name);
+    if (basket->has(item)) {
+      basket->at(item) += qty;
+    } else {
+      basket->add(item, qty);
+    }
+  }
+
+  void handleRemove(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
+  {
+    std::string b_name, item;
+    size_t qty = 0;
+    in >> b_name >> item >> qty;
+    if (in.eof()) {
+      return;
+    }
+    if (in.fail()) {
+      out << "invalid quantity\n";
+      in.clear();
+      in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      return;
+    }
+
+    if (!(baskets.has(b_name))) {
+      out << " - no such basket\n";
+      return;
+    }
+    if (!(recipes.hasVertex(item))) {
+      out << " - no such ingredient/dish in the base\n";
+      return;
+    }
+    if (qty == 0) {
+      out << " - quantity must be natural number\n";
+      return;
+    }
+
+    Basket *basket = baskets.get(b_name);
+    if (!(basket->has(item))) {
+      out << " - no such ingredient/dish in this busket\n";
+      return;
+    }
+    if (basket->at(item) <= qty) {
+      basket->remove(item);
+    } else {
+      basket->at(item) -= qty;
+    }
+  }
+
+  void handleCook(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
+  {
+    std::string b_name, dish;
+    size_t asked_qty = 0;
+    in >> b_name >> dish >> asked_qty;
+    if (in.eof()) {
+      return;
+    }
+    if (in.fail()) {
+      out << "invalid quantity\n";
+      in.clear();
+      in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      return;
+    }
+
+    if (!(baskets.has(b_name))) {
+      out << " - no such basket\n";
+      return;
+    }
+    if (!(recipes.hasVertex(dish))) {
+      out << " - no such dish in the base\n";
+      return;
+    }
+    if (asked_qty == 0) {
+      out << " - quantity must be natural number\n";
+      return;
+    }
+    Basket *basket = baskets.get(b_name);
+
+    size_t vertex_qty = recipes.getVertexData(dish).second;
+    size_t rCycles = (asked_qty + vertex_qty - 1) / vertex_qty;
+    Vector< std::string > ingredients = recipes.incomingEdges(dish);
+    size_t pCycles = rCycles;
+    for (size_t i = 0; i < ingredients.getSize(); ++i) {
+      std::string ingredient = ingredients[i];
+      if (!(basket->has(ingredient))) {
+        out << "basket doesn't contain required ingredient - " << ingredient << '\n';
+        return;
+      }
+      size_t n = basket->get(ingredient) / recipes.getEdgeData(ingredient, dish);
+      pCycles = (n < pCycles) ? n : pCycles;
+
+      if (pCycles == 0) {
+        out << " - have not enough igredients even for one dish";
+        return;
+      }
+    }
+
+    size_t cycles = (pCycles >= rCycles) ? rCycles : pCycles;
+    for (size_t i = 0; i < ingredients.getSize(); ++i) {
+      std::string ingredient = ingredients[i];
+      size_t cost = cycles * recipes.getEdgeData(ingredient, dish);
+      if (basket->at(ingredient) == cost) {
+        basket->remove(ingredient);
+      } else {
+        basket->at(ingredient) -= cost;
+      }
+    }
+    if (basket->has(dish)) {
+      basket->at(dish) += cycles * vertex_qty;
+    } else {
+      basket->add(dish, cycles * vertex_qty);
+    }
+
+    out << " - cooked " << cycles * vertex_qty << ' ' << dish << '\n';
+  }
 }
 
 #endif
