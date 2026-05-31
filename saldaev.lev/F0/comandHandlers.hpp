@@ -524,11 +524,10 @@ namespace saldaev
     Basket *basket = baskets.get(b_name);
 
     Vector< std::string > vers = recipes.vertexIds();
-    for (size_t i = 0; i < vers.getSize(); ++i) // цикл по блюдам
-    {
+    bool any = false;
+    for (size_t i = 0; i < vers.getSize(); ++i) {
       std::string dish = vers[i];
-      if (recipes.indegree(dish) == 0) // проверка на то, что это блюдо
-      {
+      if (recipes.indegree(dish) == 0) {
         continue;
       }
 
@@ -539,52 +538,55 @@ namespace saldaev
       }
 
       bool flag = true;
-      bool poluchilos = true;
-      while (flag) // алгоритм
-      {
+      bool success = true;
+      while (flag) {
         flag = false;
-        for (size_t j = 0; j < ingredients.getSize(); ++j) {
+        size_t j = 0;
+        while (j < ingredients.getSize()) {
           std::string ingredient = ingredients[j];
           size_t proportion = proportions[j];
 
-          if (!(basket->has(ingredient))) { // случай, когда нужного ингредиента нет
+          if (!(basket->has(ingredient))) {
             if (mode || recipes.indegree(ingredient) == 0) {
-              poluchilos = false; // ВЫХОД
+              success = false;
               break;
             }
-            ingredients.erase(j); // удаляем составной элемент
+            ingredients.erase(j);
             proportions.erase(j);
 
-            Vector< std::string > newIngredients = recipes.incomingEdges(ingredient); // получаем его составляющие
+            Vector< std::string > newIngredients = recipes.incomingEdges(ingredient);
             for (size_t k = 0; k < newIngredients.getSize(); ++k) {
               ingredients.pushBack(newIngredients[k]);
               proportions.pushBack(proportion * recipes.getEdgeData(newIngredients[k], ingredient));
             }
             flag = true;
-            --j; // мы изменили длину ingredients. это страшно. прибегем к костылю
+            continue;
           }
-
-          else if (basket->get(ingredient) < proportion) { // случай, когда нужного ингредиентп не хватает
+          if (basket->get(ingredient) < proportion) {
             if (mode || recipes.indegree(ingredient) == 0) {
-              poluchilos = false; // ВЫХОД
+              success = false;
               break;
             }
             proportions[j] = basket->get(ingredient);
 
-            proportion -= basket->get(ingredient); // считаем сколько именно штук нам нужно "разобрать"
-            Vector< std::string > newIngredients = recipes.incomingEdges(ingredient); // получаем его составляющие
+            proportion -= basket->get(ingredient);
+            Vector< std::string > newIngredients = recipes.incomingEdges(ingredient);
             for (size_t k = 0; k < newIngredients.getSize(); ++k) {
               ingredients.pushBack(newIngredients[k]);
               proportions.pushBack(proportion * recipes.getEdgeData(newIngredients[k], ingredient));
             }
             flag = true;
-            // мы не изменили длину ingredients. это хорошо. костыль не нужен.
           }
+          ++j;
         }
       }
-      if (poluchilos) {
+      if (success) {
         out << " - " << dish << '\n';
+        any = true;
       }
+    }
+    if (!any) {
+      out << " - no cookable dishes\n";
     }
   }
 
