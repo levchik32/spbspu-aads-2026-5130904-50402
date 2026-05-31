@@ -532,32 +532,35 @@ namespace saldaev
       }
 
       Vector< std::string > ingredients = recipes.incomingEdges(dish);
-      Vector< size_t > proportions(ingredients.getSize());
+      Basket required(ingredients.getSize(), std::hash< std::string >(), std::equal_to< std::string >());
       for (size_t j = 0; j < ingredients.getSize(); ++j) {
-        proportions.pushBack(recipes.getEdgeData(ingredients[j], dish));
+        required.add(ingredients[j], recipes.getEdgeData(ingredients[j], dish));
       }
 
       bool flag = true;
       bool success = true;
       while (flag) {
         flag = false;
-        size_t j = 0;
-        while (j < ingredients.getSize()) {
-          std::string ingredient = ingredients[j];
-          size_t proportion = proportions[j];
+        auto it = required.begin();
+        while (it != required.end()) {
+          std::string ingredient = it->first;
+          size_t proportion = it->second;
 
           if (!(basket->has(ingredient))) {
             if (mode || recipes.indegree(ingredient) == 0) {
               success = false;
               break;
             }
-            ingredients.erase(j);
-            proportions.erase(j);
+            ++it;
+            required.remove(ingredient);
 
             Vector< std::string > newIngredients = recipes.incomingEdges(ingredient);
             for (size_t k = 0; k < newIngredients.getSize(); ++k) {
-              ingredients.pushBack(newIngredients[k]);
-              proportions.pushBack(proportion * recipes.getEdgeData(newIngredients[k], ingredient));
+              if (required.has(newIngredients[k])) {
+                required.at(newIngredients[k]) += proportion * recipes.getEdgeData(newIngredients[k], ingredient);
+              } else {
+                required.add(newIngredients[k], proportion * recipes.getEdgeData(newIngredients[k], ingredient));
+              }
             }
             flag = true;
             continue;
@@ -567,17 +570,20 @@ namespace saldaev
               success = false;
               break;
             }
-            proportions[j] = basket->get(ingredient);
+            required.at(ingredient) = basket->get(ingredient);
 
             proportion -= basket->get(ingredient);
             Vector< std::string > newIngredients = recipes.incomingEdges(ingredient);
             for (size_t k = 0; k < newIngredients.getSize(); ++k) {
-              ingredients.pushBack(newIngredients[k]);
-              proportions.pushBack(proportion * recipes.getEdgeData(newIngredients[k], ingredient));
+              if (required.has(newIngredients[k])) {
+                required.at(newIngredients[k]) += proportion * recipes.getEdgeData(newIngredients[k], ingredient);
+              } else {
+                required.add(newIngredients[k], proportion * recipes.getEdgeData(newIngredients[k], ingredient));
+              }
             }
             flag = true;
           }
-          ++j;
+          ++it;
         }
       }
       if (success) {
