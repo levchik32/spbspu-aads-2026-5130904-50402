@@ -12,7 +12,7 @@ class TreeNode
   TreeNode *parent_;
 
   TreeNode();
-  TreeNode(Key key, Vakue value, TreeNode *parent);
+  TreeNode(Key key, Value value, TreeNode *parent);
 };
 
 template< class Key, class Value >
@@ -55,10 +55,10 @@ public:
   bool operator!=(const BSTConstIterator &other) const;
 };
 
-template< class Key, class Value, class Compare >
+template< class Key, class Value, class Compare = std::less< Key > >
 class BSTree
 {
-  TreeNode *fRoot_, fLeaf_;
+  TreeNode< Key, Value > *fRoot_, fLeaf_;
   size_t size_;
   Compare comp_;
 
