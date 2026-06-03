@@ -62,6 +62,8 @@ class BSTree
   size_t size_;
   Compare comp_;
 
+  void clearFrom(TreeNode< Key, Value > *) noexcept;
+
 public:
   using const_iterator = BSTConstIterator< Key, Value >;
   using iterator = BSTIterator< Key, Value >;
@@ -199,6 +201,170 @@ BSTree< Key, Value, Compare >::~BSTree()
     delete fRoot_;
     delete fLeaf_;
   }
+}
+
+template< class Key, class Value, class Compare >
+void BSTree< Key, Value, Compare >::push(const Key &k, const Value &v)
+{
+  if (fRoot_->left_ == fLeaf_) {
+    fRoot_->left_ = new TreeNode< Key, Value >(k, v, fRoot_);
+    ++size_;
+    return;
+  }
+
+  TreeNode< Key, Value > it = fRoot_->left_;
+  while (it != fLeaf_) {
+    if (comp_(k, it->key_)) {
+      if (it->left_ == fLeaf_) {
+        it->left_ = new TreeNode< Key, Value >(k, v, it);
+        ++size_;
+        return;
+      }
+      it = it->left_
+
+    } else if (comp_(it->key_, k)) {
+      if (it->right_ == fLeaf_) {
+        it->right_ = new TreeNode< Key, Value >(k, v, it);
+        ++size_;
+        return;
+      }
+      it = it->right_
+
+    } else {
+      it->value_ = v;
+      retun;
+    }
+  }
+}
+
+template< class Key, class Value, class Compare >
+Value &BSTree< Key, Value, Compare >::get(Key k)
+{
+  if (fRoot_->left_ == fLeaf_) {
+    throw std::out_of_range("no such key");
+    return;
+  }
+
+  TreeNode< Key, Value > it = fRoot_->left_;
+  while (it != fLeaf_) {
+    if (comp_(k, it->key_)) {
+      it = it->left_
+    } else if (comp_(it->key_, k)) {
+      it = it->right_
+    } else {
+      return it->value_;
+    }
+  }
+  throw std::out_of_range("no such key");
+}
+
+template< class Key, class Value, class Compare >
+const Value &BSTree< Key, Value, Compare >::get(Key k) const
+{
+  if (fRoot_->left_ == fLeaf_) {
+    throw std::out_of_range("no such key");
+    return;
+  }
+
+  TreeNode< Key, Value > it = fRoot_->left_;
+  while (it != fLeaf_) {
+    if (comp_(k, it->key_)) {
+      it = it->left_
+    } else if (comp_(it->key_, k)) {
+      it = it->right_
+    } else {
+      return it->value_;
+    }
+  }
+  throw std::out_of_range("no such key");
+}
+
+template< class Key, class Value, class Compare >
+void BSTree< Key, Value, Compare >::drop(Key k)
+{
+  if (fRoot_->left_ == fLeaf_) {
+    throw std::out_of_range("no such key");
+    return;
+  }
+
+  TreeNode< Key, Value > *it = fRoot_->left_;
+  while (it != fLeaf_) {
+    if (comp_(k, it->key_)) {
+      it = it->left_
+    } else if (comp_(it->key_, k)) {
+      it = it->right_
+    } else {
+      if (it->left_ == fLeaf_) {
+        if (it, it->parent_->left_) {
+          it->parent_->left_ = it->right_;
+        } else {
+          it->parent_->right_ = it->right_;
+        }
+
+        if (it->right_ != fLeaf_) {
+          it->right_->parent_ = it->parent_;
+        }
+
+        delete it;
+        --size_;
+        return;
+      } else if (it->right_ == fLeaf_) {
+        if (it, it->parent_->left_) {
+          it->parent_->left_ = it->left_;
+        } else {
+          it->parent_->right_ = it->left_;
+        }
+
+        if (it->left_ != fLeaf_) {
+          it->left_->parent_ = it->parent_;
+        }
+
+        delete it;
+        --size_;
+        return;
+      } else {
+        TreeNode< Key, Value > *successor = it->right_;
+        while (successor->left_ != fLeaf_) {
+          successor = successor->left_;
+        }
+
+        it->key_ = successor->key_;
+        it->value_ = successor->value_;
+
+        if (successor->parent_->left_ == successor) {
+          successor->parent_->left_ = successor->right_;
+        } else {
+          successor->parent_->right_ = successor->right_;
+        }
+        if (successor->right_ != fLeaf_) {
+          successor->right_->parent_ = successor->parent_;
+        }
+        delete successor;
+        --size_;
+        return;
+      }
+    }
+  }
+  throw std::out_of_range("no such key");
+}
+
+template< class Key, class Value, class Compare >
+size_t BSTree< Key, Value, Compare >::size() const noexcept
+{
+  return size_;
+}
+
+template< class Key, class Value, class Compare >
+bool BSTree< Key, Value, Compare >::empty() const noexcept
+{
+  return fRoot_->left_ == fLeaf_;
+}
+
+template< class Key, class Value, class Compare >
+void BSTree< Key, Value, Compare >::clear()
+{
+  clearFrom(root_->left_);
+  root_->left_ = fLeaf_;
 }
 
 #endif
