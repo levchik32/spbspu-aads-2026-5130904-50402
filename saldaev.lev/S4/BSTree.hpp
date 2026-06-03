@@ -232,7 +232,7 @@ void BSTree< Key, Value, Compare >::push(const Key &k, const Value &v)
 
     } else {
       it->value_ = v;
-      retun;
+      return;
     }
   }
 }
@@ -365,6 +365,95 @@ void BSTree< Key, Value, Compare >::clear()
 {
   clearFrom(root_->left_);
   root_->left_ = fLeaf_;
+}
+
+template< class Key, class Value, class Compare >
+size_t BSTree< Key, Value, Compare >::height(const_iterator it) const
+{
+  if (it.current_ == fLeaf_) {
+    return 0;
+  }
+  size_t levi = height(BSTConstIterator(it.current_->left_));
+  size_t pravi = height(BSTConstIterator(it.current_->right_));
+  return std::max(levi, pravi) + 1;
+}
+
+template< class Key, class Value, class Compare >
+size_t BSTree< Key, Value, Compare >::height() const
+{
+  return height(BSTConstIterator(fRoot_->left_));
+}
+
+template< class Key, class Value, class Compare >
+BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLeft(const_iterator it)
+{
+  TreeNode< Key, Value > *parent = it.current_;
+  if (!parent || !parent->right_) {
+    return it;
+  }
+  TreeNode< Key, Value > *child = parent->right_;
+  parent->right_ = child->left_;
+  if (child->left_) {
+    child->left_->parent_ = parent;
+  }
+  child->parent_ = parent->parent_;
+  if (!parent->parent_) {
+    root_->right_ = child;
+  } else if (parent == parent->parent_->left_) {
+    parent->parent_->left_ = child;
+  } else {
+    parent->parent_->right_ = child;
+  }
+  child->left_ = parent;
+  parent->parent_ = child;
+  return const_iterator(child);
+}
+
+template< class Key, class Value, class Compare >
+BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateRight(const_iterator it)
+{
+  TreeNode< Key, Value > *parrent = it.current_;
+  if (!parrent || !parrent->left_) {
+    return it;
+  }
+  TreeNode< Key, Value > *child = parrent->left_;
+  parrent->left_ = child->right_;
+  if (child->right_) {
+    child->right_->parent_ = parrent;
+  }
+  child->parent_ = parrent->parent_;
+  if (!parrent->parent_) {
+    root_->right_ = child;
+  } else if (parrent == parrent->parent_->left_) {
+    parrent->parent_->left_ = child;
+  } else {
+    parrent->parent_->right_ = child;
+  }
+  child->right_ = parrent;
+  parrent->parent_ = child;
+  return const_iterator(child);
+}
+
+template< class Key, class Value, class Compare >
+BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLargeLeft(const_iterator it)
+{
+  TreeNode< Key, Value > *node = it.current_;
+  if (!node || !node->left_ || !node->left_->right_) {
+    return it;
+  }
+  rotateRight(const_iterator(node->left_));
+  return rotateLeft(it);
+}
+
+template< class Key, class Value, class Compare >
+BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLargeRight(const_iterator it)
+{
+  TreeNode< Key, Value > *node = it.current_;
+  if (!node || !node->right_ || !node->right_->left_) {
+    return it;
+  }
+  rotateLeft(const_iterator(node->right_));
+  return rotateRight(it);
 }
 
 #endif
