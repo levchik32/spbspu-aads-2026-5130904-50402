@@ -96,6 +96,109 @@ public:
   const_iterator end() const noexcept;
   const_iterator cbegin() const;
   const_iterator cend() const noexcept;
+
+  void swap(BSTree &other);
 };
+
+template< class Key, class Value >
+TreeNode< Key, Value >::TreeNode():
+  key_(Key()),
+  value_(Value()),
+  left_(nullptr),
+  right_(nullptr),
+  parent_(nullptr)
+{}
+
+template< class Key, class Value >
+TreeNode< Key, Value >::TreeNode(Key key, Value value, TreeNode *parent):
+  key_(key),
+  value_(value),
+  left_(nullptr),
+  right_(nullptr),
+  parent_(parent)
+{}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::BSTree():
+  fRoot_(nullptr),
+  fLeaf_(nullptr),
+  size_(0),
+  comp_(Compare{})
+{
+  fRoot_ = new TreeNode< Key, Value >();
+  try {
+    fLeaf_ = new TreeNode< Key, Value >();
+  } catch (...) {
+    delete fRoot_;
+    throw;
+  }
+  fRoot_->left_ = fLeaf_;
+  fRoot_->right_ = fLeaf_;
+  fLeaf_->parent_ = fRoot_;
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::BSTree(const BSTree &other):
+  fRoot_(nullptr),
+  fLeaf_(nullptr),
+  size_(0),
+  comp_(Compare{})
+{
+  fRoot_ = new TreeNode< Key, Value >();
+  try {
+    fLeaf_ = new TreeNode< Key, Value >();
+  } catch (...) {
+    delete fRoot_;
+    throw;
+  }
+  for (const std::pair< Key, Value > &v : other) {
+    push(v.first, v.second);
+  }
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::BSTree(BSTree &&other) noexcept:
+  fRoot_(other.fRoot_),
+  fLeaf_(other.fLeaf_),
+  size_(other.size_),
+  comp_(other.comp_)
+{
+  other.fRoot_ = nullptr;
+  other.fLeaf_ = nullptr;
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare > &BSTree< Key, Value, Compare >::operator=(const BSTree &other)
+{
+  if (this != std::addressof(other)) {
+    BSTree temp(other);
+    swap(temp);
+  }
+  return *this;
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare > &BSTree< Key, Value, Compare >::operator=(BSTree &&other) noexcept
+{
+  if (this != std::addressof(other)) {
+    clear();
+    root_ = other.root_;
+    size_ = other.size_;
+    comp_ = std::move(other.comp_);
+    other.root_ = nullptr;
+    other.size_ = 0;
+  }
+  return *this;
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::~BSTree()
+{
+  if (fRoot_) {
+    clear();
+    delete fRoot_;
+    delete fLeaf_;
+  }
+}
 
 #endif
