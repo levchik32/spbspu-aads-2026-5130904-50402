@@ -492,4 +492,23 @@ BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::cend() const noexc
   return BSTConstIterator< Key, Value >(fLeaf_);
 }
 
+template< class Key, class Value, class Compare >
+void BSTree< Key, Value, Compare >::swap(BSTree &other)
+{
+  std::swap(other.fRoot_, fRoot_);
+  std::swap(other.fLeaf_, fLeaf_);
+  std::swap(other.size_, size_);
+  std::swap(other.comp_, comp_);
+}
+
+template< class Key, class Value, class Compare >
+void BSTree< Key, Value, Compare >::clearFrom(TreeNode< Key, Value > *node) noexcept
+{
+  if (node != fLeaf_) {
+    clearFrom(node->left_);
+    clearFrom(node->right_);
+    delete node;
+  }
+}
+
 #endif
