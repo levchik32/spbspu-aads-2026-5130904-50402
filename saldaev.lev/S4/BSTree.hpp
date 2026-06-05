@@ -463,7 +463,7 @@ BSTree< Key, Value, Compare >::BSTIterator BSTree< Key, Value, Compare >::begin(
 template< class Key, class Value, class Compare >
 BSTree< Key, Value, Compare >::BSTIterator BSTree< Key, Value, Compare >::end() noexcept
 {
-  return BSTIterator< Key, Value >(fLeaf_);
+  return BSTIterator< Key, Value >(fRoot_);
 }
 
 template< class Key, class Value, class Compare >
@@ -475,7 +475,7 @@ BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::b
 template< class Key, class Value, class Compare >
 BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::end() const noexcept
 {
-  return BSTConstIterator< Key, Value >(fLeaf_);
+  return BSTConstIterator< Key, Value >(fRoot_);
 }
 
 template< class Key, class Value, class Compare >
@@ -487,7 +487,7 @@ BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::c
 template< class Key, class Value, class Compare >
 BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::cend() const noexcept
 {
-  return BSTConstIterator< Key, Value >(fLeaf_);
+  return BSTConstIterator< Key, Value >(fRoot_);
 }
 
 template< class Key, class Value, class Compare >
@@ -507,6 +507,97 @@ void BSTree< Key, Value, Compare >::clearFrom(TreeNode *node) noexcept
     clearFrom(node->right_);
     delete node;
   }
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::BSTIterator::BSTIterator(TreeNode *node):
+  current_(node)
+{}
+
+template< class Key, class Value, class Compare >
+std::pair< const Key, Value > &BSTree< Key, Value, Compare >::BSTIterator::operator*()
+{
+  return {current_->key_, current_->value_};
+}
+
+template< class Key, class Value, class Compare >
+std::pair< const Key, Value > *BSTree< Key, Value, Compare >::BSTIterator::operator->()
+{
+  return &{current_->key_, current_->value_};
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::BSTIterator &BSTree< Key, Value, Compare >::BSTIterator::operator++()
+{
+  if (current_ != tree_->fRoot_) {
+    return *this;
+  }
+
+  if (current_->right_ != tree_->fLeaf_) {
+    current_ = current_->right_;
+    while (current_->left_ != tree_->fLeaf_) {
+      current_ = current_->left_;
+    }
+  } else {
+    TreeNode *parent = current_->parent_;
+    while (parent != fRoot_ && current_ == parent->right_) {
+      current_ = parent;
+      parent = current_->parent_;
+    }
+    current_ = parent;
+  }
+  return *this;
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::BSTIterator &BSTree< Key, Value, Compare >::BSTIterator::operator--()
+{
+  if (current_ != tree_->fRoot_) {
+    return *this;
+  }
+
+  if (current_->left_ != tree_->fLeaf_) {
+    current_ = current_->left_;
+    while (current_->right_ != fLeaf_) {
+      current_ = current_->right_;
+    }
+  } else {
+    TreeNode *parent = current_->parent_;
+    while (parent != fRoot_ && current_ == parent->left_) {
+      current_ = parent;
+      parent = current_->parent_;
+    }
+    current_ = parent;
+  }
+  return *this;
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::BSTIterator BSTree< Key, Value, Compare >::BSTIterator::operator++(int)
+{
+  BSTIterator ret = *this;
+  ++(*this);
+  return ret;
+}
+
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::BSTIterator BSTree< Key, Value, Compare >::BSTIterator::operator--(int)
+{
+  BSTIterator ret = *this;
+  --(*this);
+  return ret;
+}
+
+template< class Key, class Value, class Compare >
+bool BSTree< Key, Value, Compare >::BSTIterator::operator==(const BSTIterator &other) const
+{
+  return current_ == other.current_;
+}
+
+template< class Key, class Value, class Compare >
+bool BSTree< Key, Value, Compare >::BSTIterator::operator!=(const BSTIterator &other) const
+{
+  return !(*this == other);
 }
 
 #endif
