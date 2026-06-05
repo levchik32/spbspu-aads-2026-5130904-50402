@@ -456,4 +456,40 @@ BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLargeRight(c
   return rotateRight(it);
 }
 
+template< class Key, class Value, class Compare >
+BSTIterator< Key, Value > BSTree< Key, Value, Compare >::begin()
+{
+  return BSTIterator< Key, Value >(fRoot_->left_);
+}
+
+template< class Key, class Value, class Compare >
+BSTIterator< Key, Value > BSTree< Key, Value, Compare >::end() noexcept
+{
+  return BSTIterator< Key, Value >(fLeaf_);
+}
+
+template< class Key, class Value, class Compare >
+BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::begin() const
+{
+  return BSTConstIterator< Key, Value >(fRoot_->left_);
+}
+
+template< class Key, class Value, class Compare >
+BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::end() const noexcept
+{
+  return BSTConstIterator< Key, Value >(fLeaf_);
+}
+
+template< class Key, class Value, class Compare >
+BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::cbegin() const
+{
+  return BSTConstIterator< Key, Value >(fRoot_->left_);
+}
+
+template< class Key, class Value, class Compare >
+BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::cend() const noexcept
+{
+  return BSTConstIterator< Key, Value >(fLeaf_);
+}
+
 #endif
