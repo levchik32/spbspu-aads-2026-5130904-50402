@@ -2,71 +2,69 @@
 #define BSTREE_HPP
 #include "../common/vector.hpp"
 
-template< class Key, class Value >
-class TreeNode
-{
-  Key key_;
-  Value value_;
-  TreeNode *left_;
-  TreeNode *right_;
-  TreeNode *parent_;
-
-  TreeNode();
-  TreeNode(Key key, Value value, TreeNode *parent);
-};
-
-template< class Key, class Value >
-class BSTIterator
-{
-  TreeNode< Key, Value > *current_;
-
-public:
-  explicit BSTIterator(TreeNode< Key, Value > *node);
-
-  std::pair< const Key, Value > operator*();
-  std::pair< const Key, Value > &operator->();
-
-  BSTIterator &operator++();
-  BSTIterator &operator--();
-  BSTIterator operator++(int);
-  BSTIterator operator--(int);
-
-  bool operator==(const BSTIterator &other) const;
-  bool operator!=(const BSTIterator &other) const;
-};
-
-template< class Key, class Value >
-class BSTConstIterator
-{
-  TreeNode< Key, Value > *current_;
-
-public:
-  explicit BSTConstIterator(TreeNode< Key, Value > *node);
-
-  std::pair< const Key, Value > operator*();
-  std::pair< const Key, Value > &operator->();
-
-  BSTConstIterator &operator++();
-  BSTConstIterator &operator--();
-  BSTConstIterator operator++(int);
-  BSTConstIterator operator--(int);
-
-  bool operator==(const BSTConstIterator &other) const;
-  bool operator!=(const BSTConstIterator &other) const;
-};
-
 template< class Key, class Value, class Compare = std::less< Key > >
 class BSTree
 {
-  TreeNode< Key, Value > *fRoot_, fLeaf_;
+  class TreeNode
+  {
+    Key key_;
+    Value value_;
+    TreeNode *left_;
+    TreeNode *right_;
+    TreeNode *parent_;
+
+    TreeNode();
+    TreeNode(Key key, Value value, TreeNode *parent);
+  };
+
+  TreeNode *fRoot_, fLeaf_;
   size_t size_;
   Compare comp_;
 
-  void clearFrom(TreeNode< Key, Value > *) noexcept;
+  void clearFrom(TreeNode *) noexcept;
 
 public:
-  using const_iterator = BSTConstIterator< Key, Value >;
-  using iterator = BSTIterator< Key, Value >;
+  class BSTIterator
+  {
+    friend class BSTree;
+    BSTree *tree_;
+    TreeNode *current_;
+
+  public:
+    explicit BSTIterator(TreeNode *node);
+
+    std::pair< const Key, Value > &operator*();
+    std::pair< const Key, Value > *operator->();
+
+    BSTIterator &operator++();
+    BSTIterator &operator--();
+    BSTIterator operator++(int);
+    BSTIterator operator--(int);
+
+    bool operator==(const BSTIterator &other) const;
+    bool operator!=(const BSTIterator &other) const;
+  };
+
+  class BSTConstIterator
+  {
+    friend class BSTree;
+    BSTree *tree_;
+    TreeNode *current_;
+
+  public:
+    explicit BSTConstIterator(TreeNode *node);
+
+    std::pair< const Key, Value > &operator*();
+    std::pair< const Key, Value > *operator->();
+
+    BSTConstIterator &operator++();
+    BSTConstIterator &operator--();
+    BSTConstIterator operator++(int);
+    BSTConstIterator operator--(int);
+
+    bool operator==(const BSTConstIterator &other) const;
+    bool operator!=(const BSTConstIterator &other) const;
+  };
 
   BSTree();
   BSTree(const BSTree &other);
@@ -84,26 +82,26 @@ public:
   bool empty() const noexcept;
   void clear();
 
-  size_t height(const_iterator it) const;
+  size_t height(BSTConstIterator it) const;
   size_t height() const;
 
-  const_iterator rotateLeft(const_iterator it);
-  const_iterator rotateRight(const_iterator it);
-  const_iterator rotateLargeLeft(const_iterator it);
-  const_iterator rotateLargeRight(const_iterator it);
+  BSTConstIterator rotateLeft(BSTConstIterator it);
+  BSTConstIterator rotateRight(BSTConstIterator it);
+  BSTConstIterator rotateLargeLeft(BSTConstIterator it);
+  BSTConstIterator rotateLargeRight(BSTConstIterator it);
 
-  iterator begin();
-  iterator end() noexcept;
-  const_iterator begin() const;
-  const_iterator end() const noexcept;
-  const_iterator cbegin() const;
-  const_iterator cend() const noexcept;
+  BSTIterator begin();
+  BSTIterator end() noexcept;
+  BSTConstIterator begin() const;
+  BSTConstIterator end() const noexcept;
+  BSTConstIterator cbegin() const;
+  BSTConstIterator cend() const noexcept;
 
   void swap(BSTree &other);
 };
 
-template< class Key, class Value >
-TreeNode< Key, Value >::TreeNode():
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::TreeNode::TreeNode():
   key_(Key()),
   value_(Value()),
   left_(nullptr),
@@ -111,8 +109,8 @@ TreeNode< Key, Value >::TreeNode():
   parent_(nullptr)
 {}
 
-template< class Key, class Value >
-TreeNode< Key, Value >::TreeNode(Key key, Value value, TreeNode *parent):
+template< class Key, class Value, class Compare >
+BSTree< Key, Value, Compare >::TreeNode::TreeNode(Key key, Value value, TreeNode *parent):
   key_(key),
   value_(value),
   left_(nullptr),
@@ -127,9 +125,9 @@ BSTree< Key, Value, Compare >::BSTree():
   size_(0),
   comp_(Compare{})
 {
-  fRoot_ = new TreeNode< Key, Value >();
+  fRoot_ = new TreeNode();
   try {
-    fLeaf_ = new TreeNode< Key, Value >();
+    fLeaf_ = new TreeNode();
   } catch (...) {
     delete fRoot_;
     throw;
@@ -146,9 +144,9 @@ BSTree< Key, Value, Compare >::BSTree(const BSTree &other):
   size_(0),
   comp_(Compare{})
 {
-  fRoot_ = new TreeNode< Key, Value >();
+  fRoot_ = new TreeNode();
   try {
-    fLeaf_ = new TreeNode< Key, Value >();
+    fLeaf_ = new TreeNode();
   } catch (...) {
     delete fRoot_;
     throw;
@@ -207,16 +205,16 @@ template< class Key, class Value, class Compare >
 void BSTree< Key, Value, Compare >::push(const Key &k, const Value &v)
 {
   if (fRoot_->left_ == fLeaf_) {
-    fRoot_->left_ = new TreeNode< Key, Value >(k, v, fRoot_);
+    fRoot_->left_ = new TreeNode(k, v, fRoot_);
     ++size_;
     return;
   }
 
-  TreeNode< Key, Value > it = fRoot_->left_;
+  TreeNode it = fRoot_->left_;
   while (it != fLeaf_) {
     if (comp_(k, it->key_)) {
       if (it->left_ == fLeaf_) {
-        it->left_ = new TreeNode< Key, Value >(k, v, it);
+        it->left_ = new TreeNode(k, v, it);
         ++size_;
         return;
       }
@@ -224,7 +222,7 @@ void BSTree< Key, Value, Compare >::push(const Key &k, const Value &v)
 
     } else if (comp_(it->key_, k)) {
       if (it->right_ == fLeaf_) {
-        it->right_ = new TreeNode< Key, Value >(k, v, it);
+        it->right_ = new TreeNode(k, v, it);
         ++size_;
         return;
       }
@@ -245,7 +243,7 @@ Value &BSTree< Key, Value, Compare >::get(Key k)
     return;
   }
 
-  TreeNode< Key, Value > it = fRoot_->left_;
+  TreeNode it = fRoot_->left_;
   while (it != fLeaf_) {
     if (comp_(k, it->key_)) {
       it = it->left_
@@ -266,7 +264,7 @@ const Value &BSTree< Key, Value, Compare >::get(Key k) const
     return;
   }
 
-  TreeNode< Key, Value > it = fRoot_->left_;
+  TreeNode it = fRoot_->left_;
   while (it != fLeaf_) {
     if (comp_(k, it->key_)) {
       it = it->left_
@@ -287,7 +285,7 @@ void BSTree< Key, Value, Compare >::drop(Key k)
     return;
   }
 
-  TreeNode< Key, Value > *it = fRoot_->left_;
+  TreeNode *it = fRoot_->left_;
   while (it != fLeaf_) {
     if (comp_(k, it->key_)) {
       it = it->left_
@@ -323,7 +321,7 @@ void BSTree< Key, Value, Compare >::drop(Key k)
         --size_;
         return;
       } else {
-        TreeNode< Key, Value > *successor = it->right_;
+        TreeNode *successor = it->right_;
         while (successor->left_ != fLeaf_) {
           successor = successor->left_;
         }
@@ -368,7 +366,7 @@ void BSTree< Key, Value, Compare >::clear()
 }
 
 template< class Key, class Value, class Compare >
-size_t BSTree< Key, Value, Compare >::height(const_iterator it) const
+size_t BSTree< Key, Value, Compare >::height(BSTConstIterator it) const
 {
   if (it.current_ == fLeaf_) {
     return 0;
@@ -385,13 +383,13 @@ size_t BSTree< Key, Value, Compare >::height() const
 }
 
 template< class Key, class Value, class Compare >
-BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLeft(const_iterator it)
+BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::rotateLeft(BSTConstIterator it)
 {
-  TreeNode< Key, Value > *parent = it.current_;
+  TreeNode *parent = it.current_;
   if (!parent || !parent->right_) {
     return it;
   }
-  TreeNode< Key, Value > *child = parent->right_;
+  TreeNode *child = parent->right_;
   parent->right_ = child->left_;
   if (child->left_) {
     child->left_->parent_ = parent;
@@ -410,13 +408,13 @@ BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLeft(const_i
 }
 
 template< class Key, class Value, class Compare >
-BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateRight(const_iterator it)
+BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::rotateRight(BSTConstIterator it)
 {
-  TreeNode< Key, Value > *parrent = it.current_;
+  TreeNode *parrent = it.current_;
   if (!parrent || !parrent->left_) {
     return it;
   }
-  TreeNode< Key, Value > *child = parrent->left_;
+  TreeNode *child = parrent->left_;
   parrent->left_ = child->right_;
   if (child->right_) {
     child->right_->parent_ = parrent;
@@ -435,9 +433,9 @@ BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateRight(const_
 }
 
 template< class Key, class Value, class Compare >
-BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLargeLeft(const_iterator it)
+BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::rotateLargeLeft(BSTConstIterator it)
 {
-  TreeNode< Key, Value > *node = it.current_;
+  TreeNode *node = it.current_;
   if (!node || !node->left_ || !node->left_->right_) {
     return it;
   }
@@ -446,9 +444,9 @@ BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLargeLeft(co
 }
 
 template< class Key, class Value, class Compare >
-BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLargeRight(const_iterator it)
+BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::rotateLargeRight(BSTConstIterator it)
 {
-  TreeNode< Key, Value > *node = it.current_;
+  TreeNode *node = it.current_;
   if (!node || !node->right_ || !node->right_->left_) {
     return it;
   }
@@ -457,37 +455,37 @@ BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::rotateLargeRight(c
 }
 
 template< class Key, class Value, class Compare >
-BSTIterator< Key, Value > BSTree< Key, Value, Compare >::begin()
+BSTree< Key, Value, Compare >::BSTIterator BSTree< Key, Value, Compare >::begin()
 {
   return BSTIterator< Key, Value >(fRoot_->left_);
 }
 
 template< class Key, class Value, class Compare >
-BSTIterator< Key, Value > BSTree< Key, Value, Compare >::end() noexcept
+BSTree< Key, Value, Compare >::BSTIterator BSTree< Key, Value, Compare >::end() noexcept
 {
   return BSTIterator< Key, Value >(fLeaf_);
 }
 
 template< class Key, class Value, class Compare >
-BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::begin() const
+BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::begin() const
 {
   return BSTConstIterator< Key, Value >(fRoot_->left_);
 }
 
 template< class Key, class Value, class Compare >
-BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::end() const noexcept
+BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::end() const noexcept
 {
   return BSTConstIterator< Key, Value >(fLeaf_);
 }
 
 template< class Key, class Value, class Compare >
-BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::cbegin() const
+BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::cbegin() const
 {
   return BSTConstIterator< Key, Value >(fRoot_->left_);
 }
 
 template< class Key, class Value, class Compare >
-BSTConstIterator< Key, Value > BSTree< Key, Value, Compare >::cend() const noexcept
+BSTree< Key, Value, Compare >::BSTConstIterator BSTree< Key, Value, Compare >::cend() const noexcept
 {
   return BSTConstIterator< Key, Value >(fLeaf_);
 }
@@ -502,7 +500,7 @@ void BSTree< Key, Value, Compare >::swap(BSTree &other)
 }
 
 template< class Key, class Value, class Compare >
-void BSTree< Key, Value, Compare >::clearFrom(TreeNode< Key, Value > *node) noexcept
+void BSTree< Key, Value, Compare >::clearFrom(TreeNode *node) noexcept
 {
   if (node != fLeaf_) {
     clearFrom(node->left_);
