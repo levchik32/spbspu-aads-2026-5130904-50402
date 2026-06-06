@@ -20,7 +20,7 @@ namespace saldaev
       out << "<EMPTY>" << '\n';
     } else {
       out << name;
-      for (const std::pair< int, std::string > &i : dat) {
+      for (const std::pair< long long, std::string > &i : dat) {
         out << ' ' << i.first << ' ' << i.second;
       }
       out << '\n';
@@ -37,7 +37,7 @@ namespace saldaev
     const Dataset dat1 = datasets.get(name1);
     const Dataset dat2 = datasets.get(name2);
     Dataset new_dat;
-    for (const std::pair< int, std::string > &i : dat1) {
+    for (const std::pair< long long, std::string > &i : dat1) {
       try {
         dat2.get(i.first);
       } catch (const std::out_of_range &) {
@@ -57,7 +57,7 @@ namespace saldaev
     const Dataset dat1 = datasets.get(name1);
     const Dataset dat2 = datasets.get(name2);
     Dataset new_dat;
-    for (const std::pair< int, std::string > &i : dat1) {
+    for (const std::pair< long long, std::string > &i : dat1) {
       try {
         dat2.get(i.first);
         new_dat.push(i.first, i.second);
@@ -77,7 +77,7 @@ namespace saldaev
     const Dataset dat1 = datasets.get(name1);
     const Dataset dat2 = datasets.get(name2);
     Dataset new_dat(dat1);
-    for (const std::pair< int, std::string > &i : dat2) {
+    for (const std::pair< long long, std::string > &i : dat2) {
       new_dat.push(i.first, i.second);
     }
     datasets.push(name3, std::move(new_dat));
