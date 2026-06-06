@@ -78,7 +78,11 @@ namespace saldaev
     const Dataset dat2 = datasets.get(name2);
     Dataset new_dat(dat1);
     for (const std::pair< long long, std::string > &i : dat2) {
-      new_dat.push(i.first, i.second);
+      try {
+        dat1.get(i.first);
+      } catch (...) {
+        new_dat.push(i.first, i.second);
+      }
     }
     datasets.push(new_name, std::move(new_dat));
   }
