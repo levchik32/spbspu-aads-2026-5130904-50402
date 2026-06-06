@@ -29,8 +29,8 @@ namespace saldaev
 
   void handleComplement(std::istream &in, std::ostream &, Datasets &datasets)
   {
-    std::string name1, name2, name3;
-    if (!(in >> name1 >> name2 >> name3)) {
+    std::string name1, name2, new_name;
+    if (!(in >> new_name >> name1 >> name2)) {
       throw std::runtime_error("Invalid input");
     }
 
@@ -44,13 +44,13 @@ namespace saldaev
         new_dat.push(i.first, i.second);
       }
     }
-    datasets.push(name3, std::move(new_dat));
+    datasets.push(new_name, std::move(new_dat));
   }
 
   void handleIntersect(std::istream &in, std::ostream &, Datasets &datasets)
   {
-    std::string name1, name2, name3;
-    if (!(in >> name1 >> name2 >> name3)) {
+    std::string name1, name2, new_name;
+    if (!(in >> new_name >> name1 >> name2)) {
       throw std::runtime_error("Invalid input");
     }
 
@@ -64,13 +64,13 @@ namespace saldaev
       } catch (const std::out_of_range &) {
       }
     }
-    datasets.push(name3, std::move(new_dat));
+    datasets.push(new_name, std::move(new_dat));
   }
 
   void handleUnion(std::istream &in, std::ostream &, Datasets &datasets)
   {
-    std::string name1, name2, name3;
-    if (!(in >> name1 >> name2 >> name3)) {
+    std::string name1, name2, new_name;
+    if (!(in >> new_name >> name1 >> name2)) {
       throw std::runtime_error("Invalid input");
     }
 
@@ -80,7 +80,7 @@ namespace saldaev
     for (const std::pair< long long, std::string > &i : dat2) {
       new_dat.push(i.first, i.second);
     }
-    datasets.push(name3, std::move(new_dat));
+    datasets.push(new_name, std::move(new_dat));
   }
 }
 
