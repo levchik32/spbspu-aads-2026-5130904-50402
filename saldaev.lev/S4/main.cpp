@@ -1,9 +1,8 @@
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include "BSTree.hpp"
-
-using Dataset = saldaev::BSTree< long long, std::string >;
-using Datasets = saldaev::BSTree< std::string, Dataset >;
+#include "comands.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -40,4 +39,22 @@ int main(int argc, char *argv[])
   }
 
   file.close();
+
+  using cmd_t = void (*)(std::istream &, std::ostream &, Datasets &);
+  saldaev::BSTree< std::string, cmd_t > commands;
+  commands.push("print", saldaev::handlePrint);
+  commands.push("complement", saldaev::handleComplement);
+  commands.push("intersect", saldaev::handleIntersect);
+  commands.push("union", saldaev::handleUnion);
+
+  std::string cmd;
+  while (std::cin >> cmd) {
+    try {
+      commands.get(cmd)(std::cin, std::cout, datasets);
+    } catch (const std::exception &) {
+      std::cout << "<INVALID COMMAND>" << '\n';
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+    }
+  }
 }
