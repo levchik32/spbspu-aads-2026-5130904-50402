@@ -669,6 +669,28 @@ namespace saldaev
     }
   }
 
+  void handleWhere_used(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  {
+    std::string item;
+    in >> item;
+    if (in.eof()) {
+      return;
+    }
+    if (!(recipes.hasVertex(item))) {
+      out << " - no such product in the base\n";
+      return;
+    }
+
+    size_t n = recipes.outdegree(item);
+    if (n == 0) {
+      out << " - this product hasn't been used as an ingredient\n";
+    }
+    Vector< std::string > v = recipes.outgoingEdges(item);
+    for (size_t i = 0; i < v.getSize(); ++i) {
+      out << " - " << v[i] << '\n';
+    }
+  }
+
 }
 
 #endif
