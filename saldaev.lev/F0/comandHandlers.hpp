@@ -87,8 +87,7 @@ namespace saldaev
       baskets.add(name, b);
     } catch (...) {
       delete b;
-      out << " - failed\n";
-      return;
+      throw;
     }
   }
 
@@ -131,8 +130,7 @@ namespace saldaev
       baskets.add(name2, b);
     } catch (...) {
       delete b;
-      out << " - failed\n";
-      return;
+      throw;
     }
   }
 
@@ -169,8 +167,7 @@ namespace saldaev
       baskets.add(new_name, b);
     } catch (...) {
       delete b;
-      out << " - failed\n";
-      return;
+      throw;
     }
   }
 
@@ -252,8 +249,6 @@ namespace saldaev
     }
     if (in.fail() || d_qty == 0 || i_qty == 0) {
       out << " - invalid quantity (must be natural number)\n";
-      in.clear();
-      in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
       return;
     }
     if (recipes.hasVertex(dish)) {
@@ -272,8 +267,6 @@ namespace saldaev
       }
       if (in.fail() || qty == 0) {
         out << " - invalid ingredient quantity (must be natural number)\n";
-        in.clear();
-        in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
         return;
       }
       if (!(recipes.hasVertex(ingredient))) {
@@ -306,8 +299,7 @@ namespace saldaev
         recipes.removeEdge(ingredients[j].first, dish);
       }
       recipes.removeVertex(dish);
-      out << " - failed\n";
-      return;
+      throw;
     }
   }
 
@@ -364,10 +356,8 @@ namespace saldaev
     if (in.eof()) {
       return;
     }
-    if (in.fail()) {
-      out << " - invalid quantity\n";
-      in.clear();
-      in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+    if (in.fail() || qty == 0) {
+      out << " - invalid quantity (must be natural number)\n";
       return;
     }
 
@@ -377,10 +367,6 @@ namespace saldaev
     }
     if (!(recipes.hasVertex(item))) {
       out << " - no such ingredient/dish\n";
-      return;
-    }
-    if (qty == 0) {
-      out << " - quantity must be natural number\n";
       return;
     }
 
@@ -400,10 +386,8 @@ namespace saldaev
     if (in.eof()) {
       return;
     }
-    if (in.fail()) {
-      out << " - invalid quantity\n";
-      in.clear();
-      in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+    if (in.fail() || qty == 0) {
+      out << " - invalid quantity (must be natural number)\n";
       return;
     }
 
@@ -413,10 +397,6 @@ namespace saldaev
     }
     if (!(recipes.hasVertex(item))) {
       out << " - no such ingredient/dish in the base\n";
-      return;
-    }
-    if (qty == 0) {
-      out << " - quantity must be natural number\n";
       return;
     }
 
@@ -440,10 +420,8 @@ namespace saldaev
     if (in.eof()) {
       return;
     }
-    if (in.fail()) {
-      out << " - invalid quantity\n";
-      in.clear();
-      in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+    if (in.fail() || asked_qty == 0) {
+      out << " - invalid quantity (must be natural number)\n";
       return;
     }
 
@@ -455,10 +433,7 @@ namespace saldaev
       out << " - no such dish in the base\n";
       return;
     }
-    if (asked_qty == 0) {
-      out << " - quantity must be natural number\n";
-      return;
-    }
+
     Basket *basket = baskets.get(b_name);
 
     size_t vertex_qty = recipes.getVertexData(dish).second;
@@ -595,6 +570,9 @@ namespace saldaev
       out << " - no cookable dishes\n";
     }
   }
+
+  void handleShow_recipe(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
+  {}
 
 }
 

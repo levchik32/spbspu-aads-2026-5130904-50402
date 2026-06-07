@@ -31,7 +31,15 @@ int main()
   std::string cmd = "";
   while (std::cin >> cmd) {
     if (commands.has(cmd)) {
-      commands.get(cmd)(std::cin, std::cout, baskets, recipes);
+      try {
+        commands.get(cmd)(std::cin, std::cout, baskets, recipes);
+      } catch (...) {
+        std::cout << "failed to process the command";
+      }
+      if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      }
     } else {
       std::cout << " - no such command\n";
     }
