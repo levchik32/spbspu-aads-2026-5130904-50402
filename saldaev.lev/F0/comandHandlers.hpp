@@ -571,8 +571,64 @@ namespace saldaev
     }
   }
 
-  void handleShow_recipe(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
-  {}
+  void handleShow_recipe(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  {
+    std::string dish;
+    size_t depth = 0;
+    in >> dish >> depth;
+    if (in.eof()) {
+      return;
+    }
+    if (in.fail() || depth == 0) {
+      out << " - invalid depth (must be natural number)\n";
+      return;
+    }
+    if (!(recipes.hasVertex(dish))) {
+      out << " - no such dish in the base\n";
+      return;
+    }
+    if (recipes.indegree(dish) == 0) {
+      out << " - it is a base product (have no recipe)";
+      return;
+    }
+
+    Vector< std::string > v1(1);
+    Vector< std::string > v2(1);
+
+    v1.pushBack(dish);
+    for (size_t k = 0; k < depth; ++k) {
+      size_t n = v1.getSize();
+      for (size_t i = 0; i < n; ++i) {
+        std::string v1i = v1[i];
+        if (recipes.indegree(v1i) != 0) {
+          bool found = false;
+          for (size_t l = 0; l < v2.getSize(); ++l) {
+            if (v2[l] == v1i) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            v2.pushBack(v1i);
+            Vector< std::string > v = recipes.incomingEdges(v1i);
+            v1.pushBackRange(v.begin(), v.getSize());
+          }
+        }
+      }
+      v1.erase(0, n);
+    }
+
+    for (size_t i = 0; i < v2.getSize(); ++i) {
+      std::string v2i = v2[i];
+      out << " - " << recipes.getVertexData(v2i).second << ' ' << v2i << " = ";
+      Vector< std::string > v = recipes.incomingEdges(v2i);
+      out << recipes.getEdgeData(v[0], v2i) << ' ' << v[0];
+      for (size_t j = 1; j < v.getSize(); ++j) {
+        out << " + " << recipes.getEdgeData(v[j], v2i) << ' ' << v[j];
+      }
+      out << '\n';
+    }
+  }
 
 }
 
