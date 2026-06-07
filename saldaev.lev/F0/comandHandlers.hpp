@@ -630,6 +630,41 @@ namespace saldaev
     }
   }
 
+  void handleNeed_for(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
+  {
+    std::string b_name, dish;
+    size_t qty = 0;
+    in >> dish >> qty >> b_name;
+    if (in.eof()) {
+      return;
+    }
+    if (in.fail() || qty == 0) {
+      out << " - invalid quantity (must be natural number)\n";
+      return;
+    }
+
+    if (baskets.has(b_name)) {
+      out << " - new name is not unique\n";
+      return;
+    }
+    if (!(recipes.hasVertex(dish))) {
+      out << " - no such dish in the base\n";
+      return;
+    }
+
+    Basket *b = new Basket(BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{});
+    try {
+      Vector< std::string > v = recipes.incomingEdges(dish);
+      for (size_t i = 0; i < v.getSize(); ++i) {
+        b->add(v[i], recipes.getEdgeData(v[i], dish));
+      }
+      baskets.add(b_name, b);
+    } catch (...) {
+      delete b;
+      throw;
+    }
+  }
+
 }
 
 #endif

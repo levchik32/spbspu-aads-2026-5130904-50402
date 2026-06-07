@@ -25,6 +25,7 @@ int main()
   commands.add("cook", saldaev::handleCook);
   commands.add("cookable", saldaev::handleCookable);
   commands.add("show_recipe", saldaev::handleShow_recipe);
+  commands.add("need_for", saldaev::handleNeed_for);
 
   saldaev::Recipes recipes;
   saldaev::Baskets baskets(5, std::hash< std::string >{}, std::equal_to< std::string >{});
