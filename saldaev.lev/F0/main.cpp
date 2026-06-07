@@ -35,8 +35,8 @@ int main()
     if (commands.has(cmd)) {
       try {
         commands.get(cmd)(std::cin, std::cout, baskets, recipes);
-      } catch (...) {
-        std::cout << "failed to process the command";
+      } catch (const std::exception &e) {
+        std::cout << "failed to process the command (" << e.what() << ")\n";
       }
       if (std::cin.fail()) {
         std::cin.clear();

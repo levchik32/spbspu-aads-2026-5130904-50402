@@ -433,6 +433,10 @@ namespace saldaev
       out << " - no such dish in the base\n";
       return;
     }
+    if (!(recipes.indegree(dish))) {
+      out << " - it is a base product (can't cook such)\n";
+      return;
+    }
 
     Basket *basket = baskets.get(b_name);
 
