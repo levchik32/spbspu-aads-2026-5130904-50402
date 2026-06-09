@@ -10,7 +10,7 @@ namespace saldaev
 
   using Recipes = Graph< std::pair< std::string, size_t >, size_t >;
   using Basket = HashTable< std::string, size_t, std::hash< std::string >, std::equal_to< std::string > >;
-  using Baskets = HashTable< std::string, Basket *, std::hash< std::string >, std::equal_to< std::string > >;
+  using Baskets = HashTable< std::string, Basket, std::hash< std::string >, std::equal_to< std::string > >;
 
   const std::pair< std::string, std::string > HELP_DATA[] = {
       {"help", "help <команда> - выводит описание указанной команды."},
@@ -82,13 +82,7 @@ namespace saldaev
       return;
     }
 
-    Basket *b = new Basket(BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{});
-    try {
-      baskets.add(name, b);
-    } catch (...) {
-      delete b;
-      throw;
-    }
+    baskets.add(name, Basket(BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{}));
   }
 
   void handleBasket_delete(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
@@ -104,7 +98,6 @@ namespace saldaev
       return;
     }
 
-    delete baskets.get(name);
     baskets.remove(name);
   }
 
@@ -125,13 +118,7 @@ namespace saldaev
       return;
     }
 
-    Basket *b = new Basket(*(baskets.get(name)));
-    try {
-      baskets.add(name2, b);
-    } catch (...) {
-      delete b;
-      throw;
-    }
+    baskets.add(name2, baskets.get(name));
   }
 
   void handleMerge(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
@@ -151,24 +138,19 @@ namespace saldaev
       return;
     }
 
-    Basket *b = new Basket(*(baskets.get(name1)));
-    Basket *b2 = baskets.get(name2);
-    auto it = b2->begin();
-    try {
-      while (it != b2->end()) {
-        if (b->has(it->first)) {
-          b->at(it->first) += it->second;
-        } else {
-          b->add(it->first, it->second);
-        }
-        ++it;
+    Basket b(baskets.get(name1));
+    Basket &b2 = baskets.at(name2);
+    auto it = b2.begin();
+    while (it != b2.end()) {
+      if (b.has(it->first)) {
+        b.at(it->first) += it->second;
+      } else {
+        b.add(it->first, it->second);
       }
-
-      baskets.add(new_name, b);
-    } catch (...) {
-      delete b;
-      throw;
+      ++it;
     }
+
+    baskets.add(new_name, std::move(b));
   }
 
   void handleProd_add(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
@@ -336,13 +318,13 @@ namespace saldaev
       return;
     }
 
-    Basket *bskt = baskets.get(name);
-    auto it = bskt->begin();
-    if (it == bskt->end()) {
+    Basket &bskt = baskets.at(name);
+    auto it = bskt.begin();
+    if (it == bskt.end()) {
       out << " - this one is empty\n";
       return;
     }
-    while (it != bskt->end()) {
+    while (it != bskt.end()) {
       out << " - " << it->first << ": " << it->second << '\n';
       ++it;
     }
@@ -370,11 +352,11 @@ namespace saldaev
       return;
     }
 
-    Basket *basket = baskets.get(b_name);
-    if (basket->has(item)) {
-      basket->at(item) += qty;
+    Basket &basket = baskets.at(b_name);
+    if (basket.has(item)) {
+      basket.at(item) += qty;
     } else {
-      basket->add(item, qty);
+      basket.add(item, qty);
     }
   }
 
@@ -400,15 +382,15 @@ namespace saldaev
       return;
     }
 
-    Basket *basket = baskets.get(b_name);
-    if (!(basket->has(item))) {
+    Basket &basket = baskets.at(b_name);
+    if (!(basket.has(item))) {
       out << " - no such ingredient/dish in this busket\n";
       return;
     }
-    if (basket->at(item) <= qty) {
-      basket->remove(item);
+    if (basket.at(item) <= qty) {
+      basket.remove(item);
     } else {
-      basket->at(item) -= qty;
+      basket.at(item) -= qty;
     }
   }
 
@@ -438,7 +420,7 @@ namespace saldaev
       return;
     }
 
-    Basket *basket = baskets.get(b_name);
+    Basket &basket = baskets.at(b_name);
 
     size_t vertex_qty = recipes.getVertexData(dish).second;
     size_t rCycles = (asked_qty + vertex_qty - 1) / vertex_qty;
@@ -446,11 +428,11 @@ namespace saldaev
     size_t pCycles = rCycles;
     for (size_t i = 0; i < ingredients.getSize(); ++i) {
       std::string ingredient = ingredients[i];
-      if (!(basket->has(ingredient))) {
+      if (!(basket.has(ingredient))) {
         pCycles = 0;
         break;
       }
-      size_t n = basket->get(ingredient) / recipes.getEdgeData(ingredient, dish);
+      size_t n = basket.get(ingredient) / recipes.getEdgeData(ingredient, dish);
       pCycles = (n < pCycles) ? n : pCycles;
 
       if (pCycles == 0) {
@@ -462,16 +444,16 @@ namespace saldaev
     for (size_t i = 0; i < ingredients.getSize(); ++i) {
       std::string ingredient = ingredients[i];
       size_t cost = cycles * recipes.getEdgeData(ingredient, dish);
-      if (basket->at(ingredient) == cost) {
-        basket->remove(ingredient);
+      if (basket.at(ingredient) == cost) {
+        basket.remove(ingredient);
       } else {
-        basket->at(ingredient) -= cost;
+        basket.at(ingredient) -= cost;
       }
     }
-    if (basket->has(dish)) {
-      basket->at(dish) += cycles * vertex_qty;
+    if (basket.has(dish)) {
+      basket.at(dish) += cycles * vertex_qty;
     } else {
-      basket->add(dish, cycles * vertex_qty);
+      basket.add(dish, cycles * vertex_qty);
     }
 
     out << " - cooked " << cycles * vertex_qty << ' ' << dish << '\n';
@@ -500,7 +482,7 @@ namespace saldaev
       return;
     }
 
-    Basket *basket = baskets.get(b_name);
+    Basket &basket = baskets.at(b_name);
 
     Vector< std::string > vers = recipes.vertexIds();
     bool any = false;
@@ -525,7 +507,7 @@ namespace saldaev
           std::string ingredient = it->first;
           size_t proportion = it->second;
 
-          if (!(basket->has(ingredient))) {
+          if (!(basket.has(ingredient))) {
             if (mode || recipes.indegree(ingredient) == 0) {
               success = false;
               break;
@@ -544,14 +526,14 @@ namespace saldaev
             flag = true;
             continue;
           }
-          if (basket->get(ingredient) < proportion) {
+          if (basket.get(ingredient) < proportion) {
             if (mode || recipes.indegree(ingredient) == 0) {
               success = false;
               break;
             }
-            required.at(ingredient) = basket->get(ingredient);
+            required.at(ingredient) = basket.get(ingredient);
 
-            proportion -= basket->get(ingredient);
+            proportion -= basket.get(ingredient);
             Vector< std::string > newIngredients = recipes.incomingEdges(ingredient);
             for (size_t k = 0; k < newIngredients.getSize(); ++k) {
               if (required.has(newIngredients[k])) {
@@ -592,7 +574,7 @@ namespace saldaev
       return;
     }
     if (recipes.indegree(dish) == 0) {
-      out << " - it is a base product (have no recipe)";
+      out << " - it is a base product (have no recipe)\n";
       return;
     }
 
@@ -656,17 +638,13 @@ namespace saldaev
       return;
     }
 
-    Basket *b = new Basket(BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{});
-    try {
-      Vector< std::string > v = recipes.incomingEdges(dish);
-      for (size_t i = 0; i < v.getSize(); ++i) {
-        b->add(v[i], recipes.getEdgeData(v[i], dish));
-      }
-      baskets.add(b_name, b);
-    } catch (...) {
-      delete b;
-      throw;
+    Basket b(BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{});
+
+    Vector< std::string > v = recipes.incomingEdges(dish);
+    for (size_t i = 0; i < v.getSize(); ++i) {
+      b.add(v[i], recipes.getEdgeData(v[i], dish));
     }
+    baskets.add(b_name, b);
   }
 
   void handleWhere_used(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
