@@ -1,7 +1,7 @@
-#include "HashTable.hpp"
-#include <boost/test/unit_test.hpp>
 #include <functional>
 #include <stdexcept>
+#include <boost/test/unit_test.hpp>
+#include "HashTable.hpp"
 
 namespace saldaev
 {
