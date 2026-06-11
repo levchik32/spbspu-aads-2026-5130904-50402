@@ -28,8 +28,63 @@ int main()
   commands.add("need_for", saldaev::handleNeed_for);
   commands.add("where_used", saldaev::handleWhere_used);
 
-  saldaev::Recipes recipes;
+  std::ifstream file;
+  file.open("basketsSaveFile.txt");
+  if (!file.is_open()) {
+    std::cerr << "failed to open baskets save file\n";
+  }
+
   saldaev::Baskets baskets(5, std::hash< std::string >{}, std::equal_to< std::string >{});
+
+  std::string bName;
+  while (file >> bName) {
+    saldaev::Basket b(saldaev::BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{});
+    while (file.peek() != '\n') {
+      std::string item;
+      size_t qty;
+      if (!(file >> item >> qty)) {
+        std::cout << " - baskets save file is corrupted\n";
+        file.setstate(std::ios::failbit);
+        baskets.clear();
+        break;
+      }
+      b.add(item, qty);
+    }
+    baskets.add(bName, b);
+  }
+  file.close();
+
+  file.open("graphSaveFile.txt");
+  if (!file.is_open()) {
+    std::cerr << "failed to open graph save file\n";
+  }
+
+  saldaev::Recipes recipes;
+
+  while (file.peek() != '\n') {
+    std::string vName;
+    size_t n;
+    if (!(file >> vName >> n)) {
+      std::cout << " - graph save file is corrupted\n";
+      file.setstate(std::ios::failbit);
+      recipes.clear();
+      break;
+    }
+    recipes.addVertex({vName, n}, vName);
+  }
+
+  std::string vName1;
+  std::string vName2;
+  size_t weight;
+  while (file >> vName1) {
+    if (!(file >> vName2 >> weight)) {
+      std::cout << " - graph save file is corrupted\n";
+      file.setstate(std::ios::failbit);
+      recipes.clear();
+      break;
+    }
+    recipes.addEdge(vName1, vName2, weight);
+  }
 
   std::string cmd = "";
   while (std::cin >> cmd) {
@@ -46,11 +101,5 @@ int main()
     } else {
       std::cout << " - no such command\n";
     }
-  }
-
-  auto it = baskets.begin();
-  while (it != baskets.end()) {
-    delete it->second;
-    ++it;
   }
 }
