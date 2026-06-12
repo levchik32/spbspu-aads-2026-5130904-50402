@@ -13,6 +13,8 @@ namespace saldaev
       Key key_;
       Value value_;
       size_t dist_;
+
+      Node();
     };
 
     Vector< Node > data_;
@@ -40,7 +42,7 @@ namespace saldaev
     private:
       typename Vector< Node >::iterator it;
 
-      Iterator(Vector< Node >::iterator it);
+      Iterator(typename Vector< Node >::iterator it);
     };
 
     struct ConstIterator
@@ -60,7 +62,7 @@ namespace saldaev
     private:
       typename Vector< Node >::iterator it;
 
-      ConstIterator(Vector< Node >::iterator it);
+      ConstIterator(typename Vector< Node >::iterator it);
     };
 
     HashTable(Hash hasher, Equal key_eq, size_t slots = 11, float load_factor = 0.75f);
@@ -84,6 +86,144 @@ namespace saldaev
     ConstIterator begin() const;
     ConstIterator end() const;
   };
+}
+
+template< class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::Node::Node():
+  taken_(false),
+  key_(Key()),
+  value_(Value()),
+  dist_(0)
+{}
+
+template< class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::HashTable(Hash hasher, Equal key_eq, size_t slots, float load_factor):
+  data_(slots),
+  hasher_(hasher),
+  key_eq_(key_eq),
+  slots_(slots),
+  elements_(0),
+  max_load_factor_(load_factor)
+{
+  for (size_t i = 0; i < slots; ++i) {
+    data_.pushBack(Node());
+  }
+}
+
+template< class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
+{
+  if (has(k)) {
+    throw std::invalid_argument("Key already exists");
+  }
+
+  size_t curr_idx = hasher_(k) % slots_;
+  size_t dist = 0;
+  while (data_[curr_idx].taken_) {
+    if (dist > data_[curr_idx].dist_) {
+      std::swap(dist, data_[curr_idx].dist_);
+      std::swap(k, data_[curr_idx].key_);
+      std::swap(v, data_[curr_idx].value_);
+    }
+    curr_idx = (curr_idx + 1) % slots_;
+    ++dist;
+  }
+
+  ++elements_;
+  if (max_load_factor_ * slots_ <= elements_) {
+    rehash(slots_ * 2);
+  }
+}
+
+template< class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::has(Key k) const noexcept
+{
+  size_t curr_idx = hasher_(k) % slots_;
+  size_t dist = 0;
+  while (dist <= data_[curr_idx].dist_) {
+    if (data_[curr_idx].taken_) {
+      if (key_eq_(k, data_[curr_idx].key_)) {
+        return true;
+      }
+    }
+    curr_idx = (curr_idx + 1) % slots_;
+    ++dist;
+  }
+  return false;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+Value saldaev::HashTable< Key, Value, Hash, Equal >::get(Key k) const
+{
+  size_t curr_idx = hasher_(k) % slots_;
+  size_t dist = 0;
+  while (dist <= data_[curr_idx].dist_) {
+    if (data_[curr_idx].taken_) {
+      if (key_eq_(k, data_[curr_idx].key_)) {
+        return data_[curr_idx].value_;
+      }
+    }
+    curr_idx = (curr_idx + 1) % slots_;
+    ++dist;
+  }
+  throw std::invalid_argument("Key does not exist");
+}
+
+template< class Key, class Value, class Hash, class Equal >
+Value &saldaev::HashTable< Key, Value, Hash, Equal >::at(Key k)
+{
+  size_t curr_idx = hasher_(k) % slots_;
+  size_t dist = 0;
+  while (dist <= data_[curr_idx].dist_) {
+    if (data_[curr_idx].taken_) {
+      if (key_eq_(k, data_[curr_idx].key_)) {
+        return data_[curr_idx].value_;
+      }
+    }
+    curr_idx = (curr_idx + 1) % slots_;
+    ++dist;
+  }
+  throw std::invalid_argument("Key does not exist");
+}
+
+template< class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::remove(Key k)
+{
+  size_t curr_idx = hasher_(k) % slots_;
+  size_t dist = 0;
+  while (dist <= data_[curr_idx].dist_) {
+    if (data_[curr_idx].taken_) {
+      if (key_eq_(k, data_[curr_idx].key_)) {
+        while (data_[(curr_idx + 1) % slots_].taken_ && data_[(curr_idx + 1) % slots_].dist_ > 0) {
+          data_[curr_idx] = std::move(data_[(curr_idx + 1) % slots_]);
+          data_[curr_idx].dist_--;
+          curr_idx = (curr_idx + 1) % slots_;
+        }
+        return;
+      }
+    }
+    curr_idx = (curr_idx + 1) % slots_;
+    ++dist;
+  }
+  throw std::invalid_argument("Key does not exist");
+}
+
+template< class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::rewrite(Key k, Value v)
+{
+  size_t curr_idx = hasher_(k) % slots_;
+  size_t dist = 0;
+  while (dist <= data_[curr_idx].dist_) {
+    if (data_[curr_idx].taken_) {
+      if (key_eq_(k, data_[curr_idx].key_)) {
+        data_[curr_idx].value_ = v;
+        return;
+      }
+    }
+    curr_idx = (curr_idx + 1) % slots_;
+    ++dist;
+  }
+  throw std::invalid_argument("Key does not exist");
 }
 
 #endif
