@@ -79,7 +79,6 @@ namespace saldaev
     size_t size() const noexcept;
     float load_factor() const noexcept;
     bool empty() const noexcept;
-    void swap(HashTable &other) noexcept;
 
     Iterator begin();
     Iterator end();
@@ -230,6 +229,45 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::rewrite(Key k, Value v)
     ++dist;
   }
   throw std::invalid_argument("Key does not exist");
+}
+
+template< class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
+{
+  HashTable newOne(hasher_, key_eq_, slots);
+
+  for (size_t i = 0; i < slots_; ++i) {
+    newOne.add(data_[i].key_, data_[i].value_);
+  }
+
+  std::swap(*this, newOne);
+}
+
+template< class Key, class Value, class Hash, class Equal >
+void saldaev::HashTable< Key, Value, Hash, Equal >::clear() noexcept
+{
+  for (size_t i = 0; i < slots_; ++i) {
+    data_[i].taken_ = false;
+  }
+  elements_ = 0;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+size_t saldaev::HashTable< Key, Value, Hash, Equal >::size() const noexcept
+{
+  return slots_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+float saldaev::HashTable< Key, Value, Hash, Equal >::load_factor() const noexcept
+{
+  return (float)elements_ / slots_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::empty() const noexcept
+{
+  return elements_ == 0;
 }
 
 #endif
