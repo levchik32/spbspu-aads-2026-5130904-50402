@@ -128,6 +128,10 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
     curr_idx = (curr_idx + 1) % slots_;
     ++dist;
   }
+  data_[curr_idx].taken_ = true;
+  data_[curr_idx].dist_ = dist;
+  data_[curr_idx].key_ = k;
+  data_[curr_idx].value_ = v;
 
   ++elements_;
   if (max_load_factor_ * slots_ <= elements_) {
@@ -197,8 +201,10 @@ void saldaev::HashTable< Key, Value, Hash, Equal >::remove(Key k)
         while (data_[(curr_idx + 1) % slots_].taken_ && data_[(curr_idx + 1) % slots_].dist_ > 0) {
           data_[curr_idx] = std::move(data_[(curr_idx + 1) % slots_]);
           data_[curr_idx].dist_--;
+          data_[(curr_idx + 1) % slots_].taken_ = false;
           curr_idx = (curr_idx + 1) % slots_;
         }
+        --elements_;
         return;
       }
     }
