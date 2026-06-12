@@ -40,7 +40,7 @@ namespace saldaev
       bool operator!=(const Iterator &other) const;
 
     private:
-      typename Vector< Node >::iterator it;
+      typename Vector< Node >::iterator it_;
 
       Iterator(typename Vector< Node >::iterator it);
     };
@@ -268,6 +268,64 @@ template< class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::empty() const noexcept
 {
   return elements_ == 0;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::begin()
+{
+  return {data_.begin()};
+}
+
+template< class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::end()
+{
+  return {data_.end()};
+}
+
+template< class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::Iterator(typename Vector< Node >::iterator it):
+  it_(it)
+{}
+
+template< class Key, class Value, class Hash, class Equal >
+std::pair< Key, Value > &saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator*()
+{
+  return {it_->key_, it->value_};
+}
+
+template< class Key, class Value, class Hash, class Equal >
+std::pair< Key, Value > *saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator->()
+{
+  return &std::pair< Key, Value >(it_->key_, it->value_);
+}
+
+template< class Key, class Value, class Hash, class Equal >
+typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::Iterator &
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++()
+{
+  it_++;
+  return *this;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::Iterator
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++(int)
+{
+  auto cp = *this;
+  it_++;
+  return cp;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator==(const Iterator &other) const
+{
+  return it_ == other.it_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator!=(const Iterator &other) const
+{
+  return !(*this == other);
 }
 
 #endif
