@@ -430,14 +430,15 @@ namespace saldaev
     for (size_t i = 0; i < ingredients.getSize(); ++i) {
       std::string ingredient = ingredients[i];
       if (!(basket.has(ingredient))) {
-        pCycles = 0;
-        break;
+        out << " - not enough ingredients\n";
+        return;
       }
       size_t n = basket.get(ingredient) / recipes.getEdgeData(ingredient, dish);
       pCycles = (n < pCycles) ? n : pCycles;
 
       if (pCycles == 0) {
-        break;
+        out << " - not enough ingredients\n";
+        return;
       }
     }
 
