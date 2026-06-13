@@ -2,6 +2,7 @@
 #define COMANDHANDLERS_HPP
 #include <iostream>
 #include <limits>
+#include "../common/vector.hpp"
 #include "Graph.hpp"
 
 namespace saldaev
@@ -82,7 +83,7 @@ namespace saldaev
       return;
     }
 
-    baskets.add(name, Basket(BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{}));
+    baskets.add(name, Basket());
   }
 
   void handleBasket_delete(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
@@ -450,6 +451,7 @@ namespace saldaev
         basket.at(ingredient) -= cost;
       }
     }
+
     if (basket.has(dish)) {
       basket.at(dish) += cycles * vertex_qty;
     } else {
@@ -493,7 +495,7 @@ namespace saldaev
       }
 
       Vector< std::string > ingredients = recipes.incomingEdges(dish);
-      Basket required(ingredients.getSize(), std::hash< std::string >(), std::equal_to< std::string >());
+      Basket required;
       for (size_t j = 0; j < ingredients.getSize(); ++j) {
         required.add(ingredients[j], recipes.getEdgeData(ingredients[j], dish));
       }
@@ -638,11 +640,11 @@ namespace saldaev
       return;
     }
 
-    Basket b(BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{});
+    Basket b;
 
     Vector< std::string > v = recipes.incomingEdges(dish);
     for (size_t i = 0; i < v.getSize(); ++i) {
-      b.add(v[i], recipes.getEdgeData(v[i], dish));
+      b.add(v[i], recipes.getEdgeData(v[i], dish) * qty);
     }
     baskets.add(b_name, b);
   }
