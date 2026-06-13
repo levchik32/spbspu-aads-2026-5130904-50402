@@ -1,7 +1,6 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
-#include "../common/HashTable.hpp"
-#include "../common/vector.hpp"
+#include "RobinTable.hpp"
 
 namespace saldaev
 {
@@ -98,7 +97,6 @@ saldaev::Graph< T, S >::Edge::Edge(S d, Vertex *f, Vertex *t):
 
 template< class T, class S >
 saldaev::Graph< T, S >::Graph():
-  vertexes(31, Hasher(), KeyEqual()),
   edges(0)
 {}
 
