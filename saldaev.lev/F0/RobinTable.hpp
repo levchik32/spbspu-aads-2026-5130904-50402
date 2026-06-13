@@ -39,9 +39,10 @@ namespace saldaev
       bool operator!=(const Iterator &other) const;
 
     private:
-      typename Vector< Node >::iterator it_;
+      typename Vector< Node >::Iterator it_;
+      Vector< Node > *v_;
 
-      Iterator(typename Vector< Node >::iterator it);
+      Iterator(typename Vector< Node >::Iterator it, Vector< Node > *v);
     };
 
     struct ConstIterator
@@ -59,9 +60,10 @@ namespace saldaev
       bool operator!=(const ConstIterator &other) const;
 
     private:
-      typename Vector< Node >::iterator it;
+      typename Vector< Node >::ConstIterator it_;
+      const Vector< Node > *v_;
 
-      ConstIterator(typename Vector< Node >::iterator it);
+      ConstIterator(typename Vector< Node >::ConstIterator it, const Vector< Node > *v);
     };
 
     HashTable(size_t slots = 11, float load_factor = 0.75f);
@@ -261,32 +263,56 @@ bool saldaev::HashTable< Key, Value, Hash, Equal >::empty() const noexcept
 }
 
 template< class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::begin()
+typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::begin()
 {
-  return {data_.begin()};
+  auto it = data_.begin();
+  while (it != data_.end() && !(it->taken_)) {
+    it++;
+  }
+  return Iterator(it, &data_);
 }
 
 template< class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::end()
+typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator saldaev::HashTable< Key, Value, Hash, Equal >::end()
 {
-  return {data_.end()};
+  return Iterator(data_.end(), &data_);
 }
 
 template< class Key, class Value, class Hash, class Equal >
-saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::Iterator(typename Vector< Node >::iterator it):
-  it_(it)
+typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
+saldaev::HashTable< Key, Value, Hash, Equal >::begin() const
+{
+  auto it = data_.begin();
+  while (it != data_.end() && !(it->taken_)) {
+    it++;
+  }
+  return ConstIterator(it, &data_);
+}
+
+template< class Key, class Value, class Hash, class Equal >
+typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator
+saldaev::HashTable< Key, Value, Hash, Equal >::end() const
+{
+  return ConstIterator(data_.end(), &data_);
+}
+
+template< class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::Iterator(typename Vector< Node >::Iterator it,
+                                                                  Vector< Node > *v):
+  it_(it),
+  v_(v)
 {}
 
 template< class Key, class Value, class Hash, class Equal >
 std::pair< Key, Value > &saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator*()
 {
-  return {it_->key_, it->value_};
+  return it_->key_value_;
 }
 
 template< class Key, class Value, class Hash, class Equal >
 std::pair< Key, Value > *saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator->()
 {
-  return &std::pair< Key, Value >(it_->key_, it->value_);
+  return &(it_->key_value_);
 }
 
 template< class Key, class Value, class Hash, class Equal >
@@ -294,6 +320,9 @@ typename saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::Iterator &
 saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++()
 {
   it_++;
+  while (it_ != v_->end() && !(it_->taken_)) {
+    it_++;
+  }
   return *this;
 }
 
@@ -303,6 +332,9 @@ saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator++(int)
 {
   auto cp = *this;
   it_++;
+  while (it_ != v_->end() && !(it_->taken_)) {
+    it_++;
+  }
   return cp;
 }
 
@@ -314,6 +346,60 @@ bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator==(const I
 
 template< class Key, class Value, class Hash, class Equal >
 bool saldaev::HashTable< Key, Value, Hash, Equal >::Iterator::operator!=(const Iterator &other) const
+{
+  return !(*this == other);
+}
+
+template< class Key, class Value, class Hash, class Equal >
+saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::ConstIterator(typename Vector< Node >::ConstIterator it,
+                                                                            const Vector< Node > *v):
+  it_(it),
+  v_(v)
+{}
+
+template< class Key, class Value, class Hash, class Equal >
+const std::pair< Key, Value > &saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator*() const
+{
+  return it_->key_value_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+const std::pair< Key, Value > *saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator->() const
+{
+  return &(it_->key_value_);
+}
+
+template< class Key, class Value, class Hash, class Equal >
+typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::ConstIterator &
+saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++()
+{
+  it_++;
+  while (it_ != v_->end() && !(it_->taken_)) {
+    it_++;
+  }
+  return *this;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+typename saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::ConstIterator
+saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator++(int)
+{
+  auto cp = *this;
+  it_++;
+  while (it_ != v_->end() && !(it_->taken_)) {
+    it_++;
+  }
+  return cp;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator==(const ConstIterator &other) const
+{
+  return it_ == other.it_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+bool saldaev::HashTable< Key, Value, Hash, Equal >::ConstIterator::operator!=(const ConstIterator &other) const
 {
   return !(*this == other);
 }
