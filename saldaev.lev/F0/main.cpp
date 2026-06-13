@@ -7,7 +7,7 @@ int main()
   using Command = void (*)(std::istream &, std::ostream &, saldaev::Baskets &, saldaev::Recipes &);
   using Commands = saldaev::HashTable< std::string, Command, std::hash< std::string >, std::equal_to< std::string > >;
 
-  Commands commands(10, std::hash< std::string >(), std::equal_to< std::string >());
+  Commands commands;
   commands.add("help", saldaev::handleHelp);
   commands.add("basket_list", saldaev::handleBasket_list);
   commands.add("basket_create", saldaev::handleBasket_create);
@@ -29,34 +29,9 @@ int main()
   commands.add("where_used", saldaev::handleWhere_used);
 
   std::ifstream iFile;
-  iFile.open("basketsSaveFile.txt");
-  if (!iFile.is_open()) {
-    std::cerr << "failed to open baskets save file\n";
-  }
-
-  saldaev::Baskets baskets(5, std::hash< std::string >{}, std::equal_to< std::string >{});
-
-  std::string bName;
-  while (iFile >> bName) {
-    saldaev::Basket b(saldaev::BASKET_CAP, std::hash< std::string >{}, std::equal_to< std::string >{});
-    while (iFile.peek() != '\n') {
-      std::string item;
-      size_t qty;
-      if (!(iFile >> item >> qty)) {
-        std::cout << " - baskets save file is corrupted\n";
-        iFile.setstate(std::ios::failbit);
-        baskets.clear();
-        break;
-      }
-      b.add(item, qty);
-    }
-    baskets.add(bName, b);
-  }
-  iFile.close();
-
   iFile.open("graphSaveFile.txt");
   if (!iFile.is_open()) {
-    std::cerr << "failed to open graph save file\n";
+    std::cerr << " - failed to open graph save file\n";
   }
 
   saldaev::Recipes recipes;
@@ -87,6 +62,30 @@ int main()
   }
 
   iFile.close();
+  iFile.open("basketsSaveFile.txt");
+  if (!iFile.is_open()) {
+    std::cerr << " - failed to open baskets save file\n";
+  }
+
+  saldaev::Baskets baskets;
+
+  std::string bName;
+  while (iFile >> bName) {
+    saldaev::Basket b;
+    while (iFile.peek() != '\n') {
+      std::string item;
+      size_t qty;
+      if (!(iFile >> item >> qty)) {
+        std::cout << " - baskets save file is corrupted\n";
+        iFile.setstate(std::ios::failbit);
+        baskets.clear();
+        break;
+      }
+      b.add(item, qty);
+    }
+    baskets.add(bName, b);
+  }
+  iFile.close();
 
   std::string cmd = "";
   while (std::cin >> cmd) {
@@ -94,7 +93,7 @@ int main()
       try {
         commands.get(cmd)(std::cin, std::cout, baskets, recipes);
       } catch (const std::exception &e) {
-        std::cout << "failed to process the command (" << e.what() << ")\n";
+        std::cout << " - failed to process the command (" << e.what() << ")\n";
       }
       if (std::cin.fail()) {
         std::cin.clear();
