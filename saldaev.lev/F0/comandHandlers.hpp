@@ -57,7 +57,7 @@ namespace saldaev
     out << " - no such command\n";
   }
 
-  void handleBasket_list(std::istream &, std::ostream &out, Baskets &baskets, Recipes &)
+  void handleBasketList(std::istream &, std::ostream &out, Baskets &baskets, Recipes &)
   {
     auto it = baskets.begin();
     if (it == baskets.end()) {
@@ -70,7 +70,7 @@ namespace saldaev
     }
   }
 
-  void handleBasket_create(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  void handleBasketCreate(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
   {
     std::string name;
     in >> name;
@@ -86,7 +86,7 @@ namespace saldaev
     baskets.add(name, Basket());
   }
 
-  void handleBasket_delete(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  void handleBasketDelete(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
   {
     std::string name;
     in >> name;
@@ -102,7 +102,7 @@ namespace saldaev
     baskets.remove(name);
   }
 
-  void handleBasket_copy(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
+  void handleBasketCopy(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
   {
     std::string name, name2;
     in >> name >> name2;
@@ -122,7 +122,7 @@ namespace saldaev
     baskets.add(name2, baskets.get(name));
   }
 
-  void handleBasket_update(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
+  void handleBasketUpdate(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
   {
     std::string opt;
     in >> opt;
@@ -211,7 +211,7 @@ namespace saldaev
     baskets.add(new_name, std::move(b));
   }
 
-  void handleProd_add(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  void handleProdAdd(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
   {
     std::string name;
     in >> name;
@@ -227,7 +227,7 @@ namespace saldaev
     recipes.addVertex({name, 0}, name);
   }
 
-  void handleProd_remove(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  void handleProdRemove(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
   {
     std::string name;
     in >> name;
@@ -247,7 +247,7 @@ namespace saldaev
     recipes.removeVertex(name);
   }
 
-  void handleProd_list(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  void handleProdList(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
   {
     std::string opt;
     in >> opt;
@@ -278,7 +278,7 @@ namespace saldaev
     }
   }
 
-  void handleRecipe_add(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  void handleRecipeAdd(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
   {
     std::string dish;
     size_t d_qty = 0;
@@ -343,7 +343,7 @@ namespace saldaev
     }
   }
 
-  void handleRecipe_remove(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  void handleRecipeRemove(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
   {
     std::string dish;
     in >> dish;
@@ -617,7 +617,7 @@ namespace saldaev
     }
   }
 
-  void handleShow_recipe(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  void handleShowRecipe(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
   {
     std::string dish;
     size_t depth = 0;
@@ -676,7 +676,7 @@ namespace saldaev
     }
   }
 
-  void handleNeed_for(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
+  void handleNeedFor(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
   {
     std::string b_name, dish;
     size_t qty = 0;
@@ -707,7 +707,7 @@ namespace saldaev
     baskets.add(b_name, b);
   }
 
-  void handleWhere_used(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
+  void handleWhereUsed(std::istream &in, std::ostream &out, Baskets &, Recipes &recipes)
   {
     std::string item;
     in >> item;

@@ -9,25 +9,25 @@ int main()
 
   Commands commands;
   commands.add("help", saldaev::handleHelp);
-  commands.add("basket_list", saldaev::handleBasket_list);
-  commands.add("basket_create", saldaev::handleBasket_create);
-  commands.add("basket_delete", saldaev::handleBasket_delete);
-  commands.add("basket_copy", saldaev::handleBasket_copy);
+  commands.add("basket_list", saldaev::handleBasketList);
+  commands.add("basket_create", saldaev::handleBasketCreate);
+  commands.add("basket_delete", saldaev::handleBasketDelete);
+  commands.add("basket_copy", saldaev::handleBasketCopy);
   commands.add("merge", saldaev::handleMerge);
-  commands.add("prod_add", saldaev::handleProd_add);
-  commands.add("prod_remove", saldaev::handleProd_remove);
-  commands.add("prod_list", saldaev::handleProd_list);
-  commands.add("recipe_add", saldaev::handleRecipe_add);
-  commands.add("recipe_remove", saldaev::handleRecipe_remove);
+  commands.add("prod_add", saldaev::handleProdAdd);
+  commands.add("prod_remove", saldaev::handleProdRemove);
+  commands.add("prod_list", saldaev::handleProdList);
+  commands.add("recipe_add", saldaev::handleRecipeAdd);
+  commands.add("recipe_remove", saldaev::handleRecipeRemove);
   commands.add("show", saldaev::handleShow);
   commands.add("add", saldaev::handleAdd);
   commands.add("remove", saldaev::handleRemove);
   commands.add("cook", saldaev::handleCook);
   commands.add("cookable", saldaev::handleCookable);
-  commands.add("show_recipe", saldaev::handleShow_recipe);
-  commands.add("need_for", saldaev::handleNeed_for);
-  commands.add("where_used", saldaev::handleWhere_used);
-  commands.add("basket_update", saldaev::handleBasket_update);
+  commands.add("show_recipe", saldaev::handleShowRecipe);
+  commands.add("need_for", saldaev::handleNeedFor);
+  commands.add("where_used", saldaev::handleWhereUsed);
+  commands.add("basket_update", saldaev::handleBasketUpdate);
 
   std::ifstream iFile;
   iFile.open("graphSaveFile.txt");
