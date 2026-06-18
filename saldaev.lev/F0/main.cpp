@@ -27,6 +27,7 @@ int main()
   commands.add("show_recipe", saldaev::handleShow_recipe);
   commands.add("need_for", saldaev::handleNeed_for);
   commands.add("where_used", saldaev::handleWhere_used);
+  commands.add("basket_update", saldaev::handleBasket_update);
 
   std::ifstream iFile;
   iFile.open("graphSaveFile.txt");

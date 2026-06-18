@@ -122,6 +122,63 @@ namespace saldaev
     baskets.add(name2, baskets.get(name));
   }
 
+  void handleBasket_update(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &recipes)
+  {
+    std::string opt;
+    in >> opt;
+    if (in.eof()) {
+      return;
+    }
+
+    if (opt == "specific") {
+      std::string name;
+      in >> name;
+      if (in.eof()) {
+        return;
+      }
+
+      if (!(baskets.has(name))) {
+        out << " - no such basket\n";
+        return;
+      }
+
+      Basket &bskt = baskets.at(name);
+      Vector< std::string > toremove(1);
+      auto it = bskt.begin();
+      while (it != bskt.end()) {
+        std::string prod = it->first;
+        if (!(recipes.hasVertex(prod))) {
+          toremove.pushBack(prod);
+        }
+        ++it;
+      }
+      for (std::string &v : toremove) {
+        bskt.remove(v);
+      }
+    } else if (opt == "all") {
+      auto it = baskets.begin();
+      while (it != baskets.end()) {
+        Basket &bskt = baskets.at(it->first);
+        Vector< std::string > toremove(1);
+        auto iti = bskt.begin();
+        while (iti != bskt.end()) {
+          std::string prod = iti->first;
+          if (!(recipes.hasVertex(prod))) {
+            toremove.pushBack(prod);
+          }
+          ++iti;
+        }
+        for (std::string &v : toremove) {
+          bskt.remove(v);
+        }
+        ++it;
+      }
+    } else {
+      out << " - wrong argument\n";
+      return;
+    }
+  }
+
   void handleMerge(std::istream &in, std::ostream &out, Baskets &baskets, Recipes &)
   {
     std::string name1, name2, new_name;
