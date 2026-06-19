@@ -35,8 +35,8 @@ namespace saldaev
       {"cookable", "cookable <b_name> <direct|full> - выводит блюда, которые можно приготовить из корзины <b_name> "
                    "(direct без цепочек, full с цепочками)."},
       {"show_recipe", "show_recipe <dish> <depth> - выводит рецепт блюда <dish> с глубиной раскрытия <depth>."},
-      {"need_for", "need_for <dish> <qty> <b_name> - создаёт корзину <b_name> с продуктами для приготовления <dish> в "
-                   "количестве <qty>."},
+      {"need_for", "need_for <dish> <qty> <b_name> - создаёт корзину <b_name> с продуктами для приготовления <dish> в"
+                   " количестве <qty>."},
       {"where_used", "where_used <item> - выводит список блюд, в которых используется <item>."}};
 
   void handleHelp(std::istream &in, std::ostream &out, Baskets &, Recipes &)
