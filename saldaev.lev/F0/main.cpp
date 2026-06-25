@@ -28,24 +28,24 @@ int main()
   commands.add("where_used", saldaev::handleWhereUsed);
   commands.add("basket_update", saldaev::handleBasketUpdate);
 
+  saldaev::Recipes recipes;
+
   std::ifstream iFile;
   iFile.open("graphSaveFile.txt");
   if (!iFile.is_open()) {
     std::cerr << " - failed to open graph save file\n";
-  }
-
-  saldaev::Recipes recipes;
-
-  while (iFile.peek() != '\n') {
-    std::string vName;
-    size_t n;
-    if (!(iFile >> vName >> n)) {
-      std::cout << " - graph save file is corrupted\n";
-      iFile.setstate(std::ios::failbit);
-      recipes.clear();
-      break;
+  } else {
+    while (iFile.peek() != '\n') {
+      std::string vName;
+      size_t n;
+      if (!(iFile >> vName >> n)) {
+        std::cout << " - graph save file is corrupted\n";
+        iFile.setstate(std::ios::failbit);
+        recipes.clear();
+        break;
+      }
+      recipes.addVertex({vName, n}, vName);
     }
-    recipes.addVertex({vName, n}, vName);
   }
 
   std::string vName1;
