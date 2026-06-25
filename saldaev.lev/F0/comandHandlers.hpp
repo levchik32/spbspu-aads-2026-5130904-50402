@@ -2,7 +2,7 @@
 #define COMANDHANDLERS_HPP
 #include <iostream>
 #include <limits>
-#include "../common/vector.hpp"
+#include <vector.hpp>
 #include "Graph.hpp"
 
 namespace saldaev

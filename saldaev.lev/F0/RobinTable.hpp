@@ -1,6 +1,6 @@
 #ifndef ROBINTABLE_HPP
 #define ROBINTABLE_HPP
-#include "../common/vector.hpp"
+#include <vector.hpp>
 
 namespace saldaev
 {
