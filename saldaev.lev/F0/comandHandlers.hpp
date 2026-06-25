@@ -13,6 +13,45 @@ namespace saldaev
   using Basket = HashTable< std::string, size_t, std::hash< std::string >, std::equal_to< std::string > >;
   using Baskets = HashTable< std::string, Basket, std::hash< std::string >, std::equal_to< std::string > >;
 
+  const std::pair< std::string, std::string > HELP_DATA[] = {
+      {"help", "help <cmd> - описание команды."},
+      {"basket_list", "basket_list - список корзин."},
+      {"basket_create", "basket_create <name> - создать корзину."},
+      {"basket_delete", "basket_delete <name> - удалить корзину."},
+      {"basket_copy", "basket_copy <name> <new> - копировать корзину."},
+      {"merge", "merge <name1> <name2> <new> - объединить корзины."},
+      {"show", "show <basket> - содержимое корзины."},
+      {"add", "add <basket> <item> <qty> - добавить продукт."},
+      {"remove", "remove <basket> <item> <qty> - удалить продукт."},
+      {"cook", "cook <basket> <dish> <qty> - приготовить блюдо (макс. порций)."},
+      {"recipe_add", "recipe_add <dish> <qty> <i_qty> [<item> <qty>...] - создать рецепт."},
+      {"recipe_remove", "recipe_remove <dish> - удалить рецепт."},
+      {"prod_add", "prod_add <name> - добавить базовый продукт."},
+      {"prod_remove", "prod_remove <name> - удалить базовый продукт."},
+      {"prod_list", "prod_list <base|derived|all> - список продуктов."},
+      {"cookable", "cookable <basket> <direct|full> - список готовимых блюд."},
+      {"show_recipe", "show_recipe <dish> <depth> - рецепт с глубиной."},
+      {"need_for", "need_for <dish> <qty> <basket> - создать корзину для блюда."},
+      {"where_used", "where_used <item> - где используется продукт."}};
+
+  void handleHelp(std::istream &in, std::ostream &out, Baskets &, Recipes &)
+  {
+    std::string com;
+    in >> com;
+    if (in.eof()) {
+      return;
+    }
+
+    size_t size = sizeof(HELP_DATA) / sizeof(HELP_DATA[0]);
+    for (size_t i = 0; i < size; ++i) {
+      if (HELP_DATA[i].first == com) {
+        out << " - " << HELP_DATA[i].second << '\n';
+        return;
+      }
+    }
+    out << " - no such command\n";
+  }
+
   void handleBasketList(std::istream &, std::ostream &out, Baskets &baskets, Recipes &)
   {
     auto it = baskets.begin();
